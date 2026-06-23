@@ -897,6 +897,9 @@ function hydrate() {
 function fmtBRL(v) {
   return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
+function fmtBRLSigned(v) {
+  return (v < 0 ? '-' : '') + fmtBRL(v);
+}
 function fmtDateLong(s) {
   const [y,m,d] = s.split('-');
   return `${d} de ${MONTHS[parseInt(m,10)-1]}`;
@@ -1048,14 +1051,16 @@ function renderInicio() {
 
   const catExp = {};
   mt.filter(t=>t.type==='despesa').forEach(t=>{ catExp[t.cat]=(catExp[t.cat]||0)+t.val; });
+  const balCls = s.bal < 0 ? 'red' : 'blue';
+  const balIconBg = s.bal < 0 ? 'rgba(255,92,92,.1)' : 'rgba(77,166,255,.1)';
 
   document.getElementById('content').innerHTML = `
     <div class="summary-grid">
-      <div class="sum-card blue">
-        <div class="sum-icon" style="background:rgba(77,166,255,.1)">💳</div>
+      <div class="sum-card ${balCls}">
+        <div class="sum-icon" style="background:${balIconBg}">💳</div>
         <div class="sum-label">Saldo Total</div>
-        <div class="sum-value blue">${fmtBRL(s.bal)}</div>
-        <div class="sum-sub">${ACCS.length} conta${ACCS.length!==1?'s':''}</div>
+        <div class="sum-value ${balCls}">${fmtBRLSigned(s.bal)}</div>
+        <div class="sum-sub">${ACCS.length} conta${ACCS.length!==1?'s':''}${s.bal<0?' · saldo negativo':''}</div>
       </div>
       <div class="sum-card green">
         <div class="sum-icon" style="background:rgba(0,214,143,.1)">📈</div>
@@ -1521,10 +1526,10 @@ function renderContas() {
 
   document.getElementById('content').innerHTML=`
     <div class="summary-grid" style="margin-bottom:18px">
-      <div class="sum-card blue" style="grid-column:1/3">
+      <div class="sum-card ${tot<0?'red':'blue'}" style="grid-column:1/3">
         <div class="sum-label">Patrimônio Total</div>
-        <div class="sum-value blue">${fmtBRL(tot)}</div>
-        <div class="sum-sub">soma de todas as contas</div>
+        <div class="sum-value ${tot<0?'red':'blue'}">${fmtBRLSigned(tot)}</div>
+        <div class="sum-sub">soma de todas as contas${tot<0?' · patrimônio negativo':''}</div>
       </div>
       <div class="sum-card green"><div class="sum-label">Contas ativas</div><div class="sum-value green">${ACCS.length}</div></div>
       <div class="sum-card purple"><div class="sum-label">Saldo positivo</div><div class="sum-value purple">${ACCS.filter(a=>a.bal>0).length}</div></div>
