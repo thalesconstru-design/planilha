@@ -181,6 +181,9 @@
     .tx-val { font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
     .tx-val.pos { color: var(--green); } .tx-val.neg { color: var(--red); }
     .tx-date { font-size: 11px; color: var(--t3); margin-top: 3px; }
+    .tx-edit { background: none; border: none; cursor: pointer; color: var(--t3); font-size: 15px; width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; transition: var(--ease); flex-shrink: 0; opacity: 0; }
+    .tx-item:hover .tx-edit { opacity: 1; }
+    .tx-edit:hover { background: rgba(77,166,255,.15); color: var(--blue); }
     .tx-del { background: none; border: none; cursor: pointer; color: var(--t3); font-size: 15px; width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; transition: var(--ease); flex-shrink: 0; opacity: 0; }
     .tx-item:hover .tx-del { opacity: 1; }
     .tx-del:hover { background: rgba(255,92,92,.15); color: var(--red); }
@@ -437,6 +440,7 @@
       .stats-row .stat-box:last-child { grid-column: 1 / -1; }
 
       .tx-del { opacity: 1; }
+      .tx-edit { opacity: 1; }
       .account-actions { opacity: 1; }
       .savings-card-actions { opacity: 1; }
 
@@ -606,6 +610,7 @@
       <label>Observação (opcional)</label>
       <input type="text" id="f-obs" placeholder="Alguma nota adicional..." />
     </div>
+    <input type="hidden" id="f-id" value="" />
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="closeModal('modal-tx')">Cancelar</button>
       <button class="btn btn-green" id="tx-save-btn" onclick="saveTx()"><i class="ti ti-check"></i> Salvar</button>
@@ -1243,7 +1248,8 @@ function txRow(t, showDel, selectable) {
       <div class="tx-val ${t.type==='receita'?'pos':'neg'}">${t.type==='receita'?'+':'-'}${fmtBRL(t.val)}</div>
       <div class="tx-date">${fmtDateLong(t.date)}</div>
     </div>
-    ${showDel?`<button class="tx-del" onclick="event.stopPropagation();deleteTx(${t.id})" title="Excluir"><i class="ti ti-trash"></i></button>`:''}
+    ${showDel?`<button class="tx-edit" onclick="event.stopPropagation();openTxEditModal(${t.id})" title="Editar"><i class="ti ti-pencil"></i></button>
+    <button class="tx-del" onclick="event.stopPropagation();deleteTx(${t.id})" title="Excluir"><i class="ti ti-trash"></i></button>`:''}
   </div>`;
 }
 
@@ -1799,6 +1805,7 @@ function openTxModal(type) {
   const isRec = type==='receita';
   document.getElementById('modal-tx-title').textContent = isRec ? '✅ Nova Receita' : '💸 Nova Despesa';
   document.getElementById('tx-save-btn').className = 'btn ' + (isRec?'btn-green':'btn-red');
+  document.getElementById('f-id').value    = '';
   document.getElementById('f-date').value  = new Date().toISOString().slice(0,10);
   document.getElementById('f-desc').value  = '';
   document.getElementById('f-val').value   = '';
@@ -1809,7 +1816,28 @@ function openTxModal(type) {
   setTimeout(()=>document.getElementById('f-desc').focus(), 120);
 }
 
+function openTxEditModal(id) {
+  const t = txs.find(x=>x.id===id);
+  if (!t) return;
+  curType = t.type;
+  const isRec = t.type==='receita';
+  document.getElementById('modal-tx-title').textContent = isRec ? '✏️ Editar Receita' : '✏️ Editar Despesa';
+  document.getElementById('tx-save-btn').className = 'btn ' + (isRec?'btn-green':'btn-red');
+  document.getElementById('f-id').value    = t.id;
+  document.getElementById('f-date').value  = t.date;
+  document.getElementById('f-desc').value  = t.desc;
+  document.getElementById('f-val').value   = t.val;
+  document.getElementById('f-obs').value   = t.obs || '';
+  document.getElementById('f-cat').innerHTML = (isRec?CATS_REC:CATS_EXP).map(c=>`<option value="${c}">${c}</option>`).join('');
+  document.getElementById('f-cat').value = t.cat;
+  document.getElementById('f-acc').innerHTML = ACCS.map(a=>`<option value="${a.name}">${a.icon} ${a.name}</option>`).join('');
+  document.getElementById('f-acc').value = t.acc;
+  document.getElementById('modal-tx').classList.add('open');
+  setTimeout(()=>document.getElementById('f-desc').focus(), 120);
+}
+
 function saveTx() {
+  const fid  = document.getElementById('f-id').value;
   const desc = document.getElementById('f-desc').value.trim();
   const val  = parseFloat(document.getElementById('f-val').value);
   const date = document.getElementById('f-date').value;
@@ -1821,16 +1849,31 @@ function saveTx() {
   if (!val||val<=0) { alert('Informe um valor válido.'); document.getElementById('f-val').focus(); return; }
   if (!date)        { alert('Informe a data.'); return; }
 
-  txs.unshift({id:nextId++, type:curType, desc, val, date, cat, acc, obs});
-  const ac=ACCS.find(a=>a.name===acc);
-  if(ac) ac.bal += curType==='receita' ? val : -val;
+  if (fid) {
+    // Editando lançamento existente
+    const t = txs.find(x=>x.id===parseInt(fid));
+    if (t) {
+      // devolve o valor antigo para a conta antiga
+      const oldAcc = ACCS.find(a=>a.name===t.acc);
+      if (oldAcc) oldAcc.bal += t.type==='receita' ? -t.val : t.val;
+      // aplica o novo valor na conta (pode ser a mesma ou outra)
+      const newAcc = ACCS.find(a=>a.name===acc);
+      if (newAcc) newAcc.bal += t.type==='receita' ? val : -val;
+      t.desc=desc; t.val=val; t.date=date; t.cat=cat; t.acc=acc; t.obs=obs;
+    }
+    toast('Lançamento atualizado! ✅','ti-check','var(--green)');
+  } else {
+    txs.unshift({id:nextId++, type:curType, desc, val, date, cat, acc, obs});
+    const ac=ACCS.find(a=>a.name===acc);
+    if(ac) ac.bal += curType==='receita' ? val : -val;
+    toast(curType==='receita'?'Receita adicionada! 📈':'Despesa adicionada! 📉',
+      curType==='receita'?'ti-trending-up':'ti-trending-down',
+      curType==='receita'?'var(--green)':'var(--red)');
+  }
 
   persist(); updateBadge();
   closeModal('modal-tx');
   renderPage(); renderSidebarAccs();
-  toast(curType==='receita'?'Receita adicionada! 📈':'Despesa adicionada! 📉',
-    curType==='receita'?'ti-trending-up':'ti-trending-down',
-    curType==='receita'?'var(--green)':'var(--red)');
 }
 
 /* ================================================================
