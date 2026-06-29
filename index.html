@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0d0f14" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#eae5dc" />
   <title>Minhas Finanças</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -14,16 +14,16 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 14px; }
-    body { font-family: 'Sora', sans-serif; background: #0d0f14; color: #e2e8f0; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--t1); height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
 
     :root {
-      --green: #00d68f; --green-dim: #00b377; --green-glow: rgba(0,214,143,.15);
-      --red: #ff5c5c;   --red-dim: #cc4a4a;   --red-glow: rgba(255,92,92,.12);
-      --blue: #4da6ff;  --amber: #f6a623;      --purple: #a78bfa;
-      --teal: #2dd4bf;
-      --bg: #0d0f14; --s1: #161922; --s2: #1e2330; --s3: #252d3d; --s4: #2d3748;
-      --border: rgba(255,255,255,.07); --border-mid: rgba(255,255,255,.12); --border-hi: rgba(255,255,255,.2);
-      --t1: #f0f4ff; --t2: #a0aec0; --t3: #606880;
+      --green: #0e9b68; --green-dim: #0b7d53; --green-glow: rgba(14,155,104,.16);
+      --red: #d6453f;   --red-dim: #b73934;   --red-glow: rgba(214,69,63,.14);
+      --blue: #3568c9;  --amber: #c8851b;      --purple: #7c5cc4;
+      --teal: #128f82;
+      --bg: #eae5dc; --s1: #f6f3ec; --s2: #ece6d9; --s3: #e0d9c7; --s4: #c9bfa8;
+      --border: rgba(58,50,38,.10); --border-mid: rgba(58,50,38,.18); --border-hi: rgba(58,50,38,.28);
+      --t1: #2c2620; --t2: #6b6256; --t3: #968c7b;
       --sb-w: 240px; --r: 10px; --r-lg: 16px; --r-xl: 22px;
       --ease: all .2s cubic-bezier(.4,0,.2,1);
     }
@@ -81,10 +81,10 @@
     /* ============================================================
        APP LAYOUT
     ============================================================ */
-    #app { display: flex; height: 100vh; }
+    #app { display: flex; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; box-shadow: 0 0 0 1px var(--border-mid), 0 30px 70px rgba(40,33,22,.12); background: var(--bg); }
 
-    /* ── SIDEBAR (desktop) ── */
-    #sidebar { width: var(--sb-w); background: var(--s1); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
+    /* ── SIDEBAR — oculta permanentemente (app é sempre estilo celular) ── */
+    #sidebar { width: var(--sb-w); background: var(--s1); border-right: 1px solid var(--border); display: none; flex-direction: column; flex-shrink: 0; z-index: 10; }
     .sb-brand { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
     .sb-logo { width: 38px; height: 38px; background: linear-gradient(135deg, var(--green), #00a36e); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 20px var(--green-glow); flex-shrink: 0; }
     .sb-brand-text .name { font-size: 14px; font-weight: 600; color: var(--t1); }
@@ -107,7 +107,7 @@
 
     /* ── MAIN ── */
     #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-    #topbar { background: var(--s1); border-bottom: 1px solid var(--border); padding: 0 26px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    #topbar { background: var(--s1); border-bottom: 1px solid var(--border); padding: 0 26px; height: 58px; display: none; align-items: center; justify-content: space-between; flex-shrink: 0; }
     .topbar-left  { display: flex; align-items: center; gap: 22px; }
     .topbar-title { font-size: 16px; font-weight: 600; color: var(--t1); }
     .month-nav    { display: flex; align-items: center; gap: 6px; }
@@ -119,13 +119,13 @@
     /* ── BUTTONS ── */
     .btn { border: none; border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 600; font-family: 'Sora', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: var(--ease); -webkit-tap-highlight-color: transparent; }
     .btn:active { transform: scale(.97); }
-    .btn-green { background: var(--green); color: #051a12; box-shadow: 0 4px 18px var(--green-glow); }
+    .btn-green { background: var(--green); color: #fff; box-shadow: 0 4px 18px var(--green-glow); }
     .btn-green:hover { background: var(--green-dim); }
     .btn-red   { background: var(--red); color: #fff; box-shadow: 0 4px 18px var(--red-glow); }
     .btn-red:hover { background: var(--red-dim); }
     .btn-blue  { background: var(--blue); color: #fff; }
     .btn-blue:hover { opacity:.88; }
-    .btn-teal  { background: var(--teal); color: #042a26; }
+    .btn-teal  { background: var(--teal); color: #fff; }
     .btn-teal:hover { opacity:.88; }
     .btn-ghost { background: var(--s2); color: var(--t2); border: 1px solid var(--border-mid); }
     .btn-ghost:hover { background: var(--s3); color: var(--t1); }
@@ -170,7 +170,7 @@
     .tx-item.selected { background: rgba(0,214,143,.08); margin: 0 -20px; padding-left: 20px; padding-right: 20px; border-radius: 8px; border-bottom-color: transparent; box-shadow: inset 3px 0 0 var(--green); }
     .tx-checkbox { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--border-mid); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: var(--ease); background: var(--s2); }
     .tx-item.selected .tx-checkbox { background: var(--green); border-color: var(--green); }
-    .tx-checkbox i { font-size: 11px; color: #051a12; opacity: 0; transition: var(--ease); }
+    .tx-checkbox i { font-size: 11px; color: #fff; opacity: 0; transition: var(--ease); }
     .tx-item.selected .tx-checkbox i { opacity: 1; }
     .tx-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
     .tx-icon.rec { background: rgba(0,214,143,.12); } .tx-icon.exp { background: rgba(255,92,92,.10); }
@@ -408,7 +408,7 @@
     }
     .fab-sub span { background: var(--s2); border: 1px solid var(--border-mid); padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; color: var(--t1); }
     .fab-btn-sm { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: none; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,.3); -webkit-tap-highlight-color: transparent; }
-    .fab-main { width: 54px; height: 54px; background: var(--green); border-radius: 18px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #051a12; font-size: 24px; box-shadow: 0 6px 24px var(--green-glow); transition: var(--ease); -webkit-tap-highlight-color: transparent; }
+    .fab-main { width: 54px; height: 54px; background: var(--green); border-radius: 18px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #fff; font-size: 24px; box-shadow: 0 6px 24px var(--green-glow); transition: var(--ease); -webkit-tap-highlight-color: transparent; }
     .fab-main.open { transform: rotate(45deg); }
 
     /* ============================================================
@@ -728,6 +728,21 @@
   </div>
 </div>
 
+<!-- MODAL — CONFIRMAÇÃO (substitui o confirm() nativo do navegador) -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="width:380px">
+    <div class="modal-header">
+      <h3 id="confirm-title">Confirmar exclusão</h3>
+      <button class="modal-close" onclick="closeConfirm()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="confirm-message" style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:6px"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-red" id="confirm-ok-btn" onclick="confirmOk()"><i class="ti ti-trash"></i> Excluir</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast"><i class="ti ti-check" id="toast-icon"></i><span id="toast-msg"></span></div>
 
@@ -752,7 +767,7 @@ const ACC_COLORS = ['#B91C1C','#1D4ED8','#166534','#6B7280','#7C3AED','#C2410C',
 const ACC_EMOJIS = ['🏦','💳','💰','👛','💵','📱','💜','🟠','🟢','🔵','⭐','🏧','📊','💎','🏡'];
 
 const SAV_EMOJIS = ['🐷','🎯','✈️','🚗','🏠','📱','💍','🎓','🏖️','🛡️','💊','🎁','🌟','🔑','⚡'];
-const SAV_COLORS = ['#2dd4bf','#4da6ff','#f6a623','#a78bfa','#00d68f','#f472b6','#ff5c5c','#fb923c','#84cc16','#38bdf8'];
+const SAV_COLORS = ['#128f82','#3568c9','#c8851b','#7c5cc4','#0e9b68','#c2487a','#c1443e','#c1631f','#5c8a1f','#1f7fae'];
 
 const BUDGETS = [
   {name:'Alimentação',limit:600,icon:'🍽️'},{name:'Transporte',limit:300,icon:'🚗'},
@@ -845,7 +860,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Backspace') pinDel();
     return;
   }
-  if (e.key === 'Escape') { closeModal('modal-tx'); closeModal('modal-acc'); closeModal('modal-sav'); closeModal('modal-pin'); }
+  if (e.key === 'Escape') { closeModal('modal-tx'); closeModal('modal-acc'); closeModal('modal-sav'); closeModal('modal-pin'); closeConfirm(); closeNavFab(); }
   if (!e.target.matches('input,select,textarea')) {
     if (e.key === 'r') openTxModal('receita');
     if (e.key === 'd') openTxModal('despesa');
@@ -944,11 +959,38 @@ function toast(msg, icon='ti-check', color='var(--green)') {
 ================================================================ */
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.addEventListener('click', e => {
-  ['modal-tx','modal-acc','modal-sav','modal-pin'].forEach(id => {
+  ['modal-tx','modal-acc','modal-sav','modal-pin','modal-confirm'].forEach(id => {
     if (e.target === document.getElementById(id))
       document.getElementById(id).classList.remove('open');
   });
+  const navWrap = document.getElementById('nav-fab-wrap');
+  if (navWrap && navWrap.classList.contains('open') && !navWrap.contains(e.target)) {
+    navWrap.classList.remove('open');
+  }
 });
+
+/* ================================================================
+   CONFIRMAÇÃO EM TELA (substitui o confirm() nativo do navegador)
+================================================================ */
+let _confirmCallback = null;
+function showConfirm(message, onConfirm, opts) {
+  opts = opts || {};
+  document.getElementById('confirm-title').textContent = opts.title || 'Confirmar exclusão';
+  document.getElementById('confirm-message').innerHTML = message;
+  document.getElementById('confirm-ok-btn').innerHTML = `<i class="ti ti-trash"></i> ${opts.okLabel || 'Excluir'}`;
+  _confirmCallback = onConfirm;
+  document.getElementById('modal-confirm').classList.add('open');
+}
+function closeConfirm() {
+  const m = document.getElementById('modal-confirm');
+  if (m) m.classList.remove('open');
+  _confirmCallback = null;
+}
+function confirmOk() {
+  const cb = _confirmCallback;
+  closeConfirm();
+  if (cb) cb();
+}
 
 /* ================================================================
    FAB (mobile)
@@ -1130,7 +1172,7 @@ function renderInicio() {
       const ctx=document.getElementById('pie-chart');
       if(!ctx) return;
       chartInst=new Chart(ctx,{type:'doughnut',
-        data:{labels:cats,datasets:[{data:vals,backgroundColor:colors,borderWidth:3,borderColor:'#161922',hoverBorderColor:'#1e2330'}]},
+        data:{labels:cats,datasets:[{data:vals,backgroundColor:colors,borderWidth:3,borderColor:'#f6f3ec',hoverBorderColor:'#ece6d9'}]},
         options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
           plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'  '+fmtBRL(c.raw)}}}}
       });
@@ -1255,13 +1297,15 @@ function txRow(t, showDel, selectable) {
 
 function deleteTx(id) {
   const t=txs.find(x=>x.id===id);
-  if(!t || !confirm(`Excluir "${t.desc}"?`)) return;
-  const ac=ACCS.find(a=>a.name===t.acc);
-  if(ac) ac.bal += t.type==='receita' ? -t.val : t.val;
-  txs=txs.filter(x=>x.id!==id);
-  _selTx.delete(id);
-  persist(); updateBadge(); renderSidebarAccs(); renderPage();
-  toast('Lançamento excluído','ti-trash','var(--red)');
+  if(!t) return;
+  showConfirm(`Excluir "<strong>${t.desc}</strong>" (${t.type==='receita'?'+':'-'}${fmtBRL(t.val)})?<br><br>Essa ação não pode ser desfeita.`, () => {
+    const ac=ACCS.find(a=>a.name===t.acc);
+    if(ac) ac.bal += t.type==='receita' ? -t.val : t.val;
+    txs=txs.filter(x=>x.id!==id);
+    _selTx.delete(id);
+    persist(); updateBadge(); renderSidebarAccs(); renderPage();
+    toast('Lançamento excluído','ti-trash','var(--red)');
+  });
 }
 
 /* ================================================================
@@ -1310,8 +1354,8 @@ function renderRelatorios() {
         {label:'Poupança',data:months.map(m=>m.sav),backgroundColor:'rgba(45,212,191,.75)', borderRadius:6,borderSkipped:false}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#606880'}},
-                y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#606880',callback:v=>'R$'+Number(v).toLocaleString('pt-BR')}}}}
+        scales:{x:{grid:{color:'rgba(40,35,25,.08)'},ticks:{color:'#8a8170'}},
+                y:{grid:{color:'rgba(40,35,25,.08)'},ticks:{color:'#8a8170',callback:v=>'R$'+Number(v).toLocaleString('pt-BR')}}}}
     });
   },80);
 }
@@ -1496,17 +1540,18 @@ function saveSavings() {
 function deleteSav(id) {
   const s = SAVINGS.find(x=>x.id===id);
   if (!s) return;
-  if (!confirm(`Excluir a reserva "${s.name}"?\n\nO valor guardado (${fmtBRL(s.val)}) voltará para o saldo da conta "${s.accName||'-'}".`)) return;
-  const acc = ACCS.find(a=>a.name===s.accName);
-  if (acc) acc.bal += s.val;
-  SAV_MOVES.push({id:nextSavMovId++, savId:s.id, val: -s.val, date: new Date().toISOString().slice(0,10)});
-  SAVINGS = SAVINGS.filter(x=>x.id!==id);
-  persist();
-  renderSidebarAccs();
-  if (curPage==='poupanca') renderPoupanca();
-  else if (curPage==='inicio') renderInicio();
-  else if (curPage==='contas') renderContas();
-  toast('Reserva removida, valor devolvido à conta','ti-trash','var(--red)');
+  showConfirm(`Excluir a reserva "<strong>${s.name}</strong>"?<br><br>O valor guardado (${fmtBRL(s.val)}) voltará para o saldo da conta "${s.accName||'-'}".`, () => {
+    const acc = ACCS.find(a=>a.name===s.accName);
+    if (acc) acc.bal += s.val;
+    SAV_MOVES.push({id:nextSavMovId++, savId:s.id, val: -s.val, date: new Date().toISOString().slice(0,10)});
+    SAVINGS = SAVINGS.filter(x=>x.id!==id);
+    persist();
+    renderSidebarAccs();
+    if (curPage==='poupanca') renderPoupanca();
+    else if (curPage==='inicio') renderInicio();
+    else if (curPage==='contas') renderContas();
+    toast('Reserva removida, valor devolvido à conta','ti-trash','var(--red)');
+  });
 }
 
 /* ================================================================
@@ -1664,12 +1709,13 @@ function deleteAcc(id) {
   const a=ACCS.find(x=>x.id===id);
   if (!a) return;
   const linkedSav = SAVINGS.filter(sv=>sv.accName===a.name);
-  let msg = `Excluir a conta "${a.name}"?\n\nOs lançamentos vinculados não serão removidos.`;
-  if (linkedSav.length) msg += `\n\nAtenção: existem ${linkedSav.length} reserva(s) de poupança vinculada(s) a esta conta. O valor guardado nelas não será devolvido automaticamente.`;
-  if (!confirm(msg)) return;
-  ACCS=ACCS.filter(x=>x.id!==id);
-  persist(); renderSidebarAccs(); renderContas();
-  toast('Conta removida','ti-trash','var(--red)');
+  let msg = `Excluir a conta "<strong>${a.name}</strong>"?<br><br>Os lançamentos vinculados não serão removidos.`;
+  if (linkedSav.length) msg += `<br><br><span style="color:var(--red);font-weight:600">Atenção:</span> existem ${linkedSav.length} reserva(s) de poupança vinculada(s) a esta conta. O valor guardado nelas não será devolvido automaticamente.`;
+  showConfirm(msg, () => {
+    ACCS=ACCS.filter(x=>x.id!==id);
+    persist(); renderSidebarAccs(); renderContas();
+    toast('Conta removida','ti-trash','var(--red)');
+  });
 }
 
 /* ================================================================
@@ -1780,16 +1826,18 @@ function lockApp() {
 }
 
 function deleteAllData() {
-  if (!confirm('ATENÇÃO: Apagar TODOS os dados?\n\nEsta ação é irreversível.')) return;
-  if (!confirm('Tem certeza? Todos os lançamentos, contas e reservas serão perdidos.')) return;
-  txs = []; ACCS = []; SAVINGS = []; SAV_MOVES = [];
-  nextId = 1; nextAccId = 1; nextSavId = 1; nextSavMovId = 1;
-  _selTx.clear();
-  persist();
-  renderSidebarAccs();
-  updateBadge();
-  navTo('inicio');
-  toast('Dados apagados','ti-trash','var(--red)');
+  showConfirm('⚠️ Apagar TODOS os dados?<br><br>Esta ação é irreversível.', () => {
+    showConfirm('Tem certeza? Todos os lançamentos, contas e reservas serão perdidos para sempre.', () => {
+      txs = []; ACCS = []; SAVINGS = []; SAV_MOVES = [];
+      nextId = 1; nextAccId = 1; nextSavId = 1; nextSavMovId = 1;
+      _selTx.clear();
+      persist();
+      renderSidebarAccs();
+      updateBadge();
+      navTo('inicio');
+      toast('Dados apagados','ti-trash','var(--red)');
+    }, {title:'Última confirmação', okLabel:'Apagar tudo'});
+  }, {title:'Apagar todos os dados', okLabel:'Continuar'});
 }
 
 /* ================================================================
