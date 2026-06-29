@@ -86,7 +86,8 @@
 
     /* COMPACT SUMMARY CARDS */
     .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
-    .sum-card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 10px 10px 9px; position: relative; overflow: hidden; animation: fadeUp .4s ease both; cursor: default; }
+    .sum-card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 10px 10px 9px; position: relative; overflow: hidden; animation: fadeUp .4s ease both; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: var(--ease); }
+    .sum-card:active { transform: scale(.96); background: var(--s2); }
     .sum-card::before { content:''; position: absolute; top:0; left:0; right:0; height:2px; border-radius: 12px 12px 0 0; }
     .sum-card.blue::before   { background: var(--blue); }
     .sum-card.green::before  { background: var(--green); }
@@ -104,6 +105,33 @@
     .panel-hd { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
     .panel-hd h3 { font-size: 12px; font-weight: 600; color: var(--t1); display: flex; align-items: center; gap: 6px; }
     .panel-hd a { font-size: 11px; color: var(--green); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+
+    /* BANCOS — MINI CARDS HORIZONTAIS (HOME) */
+    .banks-scroll-wrap { padding: 12px 14px 14px; }
+    .banks-scroll { display: flex; gap: 9px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .banks-scroll::-webkit-scrollbar { display: none; }
+    .bank-mini-card {
+      flex-shrink: 0; width: 128px; background: var(--s2); border: 1px solid var(--border);
+      border-radius: 13px; padding: 11px 11px 10px; position: relative; overflow: hidden;
+      transition: var(--ease); cursor: pointer; -webkit-tap-highlight-color: transparent;
+    }
+    .bank-mini-card:active { transform: scale(.96); }
+    .bank-mini-bar { position: absolute; top: 0; left: 0; right: 0; height: 2.5px; }
+    .bank-mini-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .bank-mini-icon { width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .bank-mini-edit { background: var(--s1); border: 1px solid var(--border-mid); width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--t3); font-size: 11px; flex-shrink: 0; transition: var(--ease); }
+    .bank-mini-edit:hover { background: var(--s3); color: var(--t1); }
+    .bank-mini-name { font-size: 11px; font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+    .bank-mini-bal { font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bank-mini-bal.pos { color: var(--green); } .bank-mini-bal.neg { color: var(--red); }
+    .bank-mini-add {
+      flex-shrink: 0; width: 96px; background: var(--s2); border: 1px dashed var(--border-mid);
+      border-radius: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; cursor: pointer; transition: var(--ease); -webkit-tap-highlight-color: transparent;
+    }
+    .bank-mini-add:active { background: var(--s3); }
+    .bank-mini-add i { font-size: 18px; color: var(--t3); }
+    .bank-mini-add span { font-size: 9px; color: var(--t3); font-weight: 600; text-align: center; padding: 0 6px; }
 
     /* CALENDAR */
     .cal-wrap { padding: 12px 14px 10px; }
@@ -358,7 +386,7 @@
       padding: 6px 0 max(6px, env(safe-area-inset-bottom)); flex-shrink: 0;
       position: relative;
     }
-    .bnav-inner { display: flex; justify-content: space-around; align-items: flex-end; }
+    .bnav-inner { display: flex; justify-content: center; align-items: flex-end; gap: 56px; }
     .bnav-item {
       display: flex; flex-direction: column; align-items: center; gap: 2px;
       padding: 5px 8px; border-radius: 10px; cursor: pointer; transition: var(--ease);
@@ -385,13 +413,13 @@
     #fab-center-btn.open { transform: rotate(45deg); background: var(--red); }
     .fab-menu {
       position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; gap: 8px; align-items: center;
+      display: flex; flex-direction: column; gap: 8px; align-items: stretch;
       opacity: 0; pointer-events: none; transition: var(--ease);
     }
     .fab-menu.open { opacity: 1; pointer-events: all; }
-    .fab-menu-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .fab-menu-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; justify-content: flex-end; }
     .fab-menu-item span { background: var(--s2); border: 1px solid var(--border-mid); padding: 5px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; color: var(--t1); }
-    .fab-mini-btn { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 3px 14px rgba(0,0,0,.25); -webkit-tap-highlight-color: transparent; }
+    .fab-mini-btn { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 3px 14px rgba(0,0,0,.25); -webkit-tap-highlight-color: transparent; color: #fff; flex-shrink: 0; }
 
     /* TOAST */
     #toast { position: fixed; bottom: calc(76px + env(safe-area-inset-bottom)); right: 12px; left: 12px; max-width: 440px; margin: 0 auto; background: var(--s2); border: 1px solid var(--border-mid); color: var(--t1); padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 500; transform: translateY(80px); opacity: 0; transition: all .3s cubic-bezier(.4,0,.2,1); z-index: 9999; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 30px rgba(0,0,0,.3); pointer-events: none; }
@@ -400,9 +428,6 @@
 
     /* FP PANEL */
     .fp-panel { background: var(--s1); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; animation: fadeUp .35s ease both; }
-
-    /* MODAL CONFIRM */
-    #modal-confirm .modal { }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -455,26 +480,31 @@
 
   <div id="content"></div>
 
-  <!-- BOTTOM NAV + CENTER FAB -->
+  <!-- BOTTOM NAV + CENTER FAB (centralizado: Início + (+)) -->
   <div id="bottom-nav">
     <div class="bnav-inner">
       <div class="bnav-item active" data-page="inicio" onclick="navTo('inicio',this)"><i class="ti ti-home"></i>Início</div>
-      <div class="bnav-item" data-page="lancamentos" onclick="navTo('lancamentos',this)"><i class="ti ti-list"></i>Lançamentos</div>
       <div id="fab-center">
         <div class="fab-menu" id="fab-menu">
           <div class="fab-menu-item">
-            <span>Receita</span>
-            <button class="fab-mini-btn btn-green" onclick="closeFab();openTxModal('receita')"><i class="ti ti-plus"></i></button>
+            <span>Bancos</span>
+            <button class="fab-mini-btn" style="background:var(--blue)" onclick="closeFab();navTo('contas')"><i class="ti ti-building-bank"></i></button>
           </div>
           <div class="fab-menu-item">
-            <span>Despesa</span>
-            <button class="fab-mini-btn btn-red" onclick="closeFab();openTxModal('despesa')"><i class="ti ti-minus"></i></button>
+            <span>Configurações</span>
+            <button class="fab-mini-btn" style="background:var(--t2)" onclick="closeFab();navTo('configuracoes')"><i class="ti ti-settings"></i></button>
+          </div>
+          <div class="fab-menu-item">
+            <span>Poupança</span>
+            <button class="fab-mini-btn" style="background:var(--teal)" onclick="closeFab();navTo('poupanca')"><i class="ti ti-piggy-bank"></i></button>
+          </div>
+          <div class="fab-menu-item">
+            <span>Lançamentos</span>
+            <button class="fab-mini-btn" style="background:var(--green)" onclick="closeFab();navTo('lancamentos')"><i class="ti ti-list"></i></button>
           </div>
         </div>
         <button id="fab-center-btn" onclick="toggleFab()"><i class="ti ti-plus"></i></button>
       </div>
-      <div class="bnav-item" data-page="poupanca" onclick="navTo('poupanca',this)"><i class="ti ti-piggy-bank"></i>Poupança</div>
-      <div class="bnav-item" data-page="configuracoes" onclick="navTo('configuracoes',this)"><i class="ti ti-settings"></i>Config.</div>
     </div>
   </div>
 </div>
@@ -833,8 +863,12 @@ const TITLES={inicio:'Início',lancamentos:'Lançamentos',relatorios:'Relatório
 function navTo(page,el){
   curPage=page; _typeFil='todos'; _selCalDay=null; closeFab();
   document.querySelectorAll('#bottom-nav .bnav-item').forEach(n=>n.classList.remove('active'));
-  const bnavEl=document.querySelector(`#bottom-nav .bnav-item[data-page="${page}"]`);
-  if(bnavEl) bnavEl.classList.add('active');
+  const bnavEl=el||document.querySelector(`#bottom-nav .bnav-item[data-page="${page}"]`);
+  if(bnavEl&&bnavEl.classList) bnavEl.classList.add('active');
+  if(page==='inicio'){
+    const homeEl=document.querySelector(`#bottom-nav .bnav-item[data-page="inicio"]`);
+    if(homeEl) homeEl.classList.add('active');
+  }
   killChart(); renderPage();
 }
 
@@ -847,7 +881,7 @@ function changeMonth(d){
 }
 
 /* ================================================================
-   PAGE — INÍCIO (Calendar + Summary + Projection)
+   PAGE — INÍCIO (Calendar + Summary + Bancos + Projection)
 ================================================================ */
 function renderInicio(){
   const mt=monthTxs().sort((a,b)=>b.date.localeCompare(a.date));
@@ -870,22 +904,30 @@ function renderInicio(){
   const balCls=s.bal<0?'red':'blue';
   document.getElementById('content').innerHTML=`
     <div class="summary-grid">
-      <div class="sum-card ${balCls}">
+      <div class="sum-card ${balCls}" onclick="navTo('contas')">
         <div class="sum-label-s">Saldo</div>
         <div class="sum-value-s ${balCls}">${fmtBRLCompact(s.bal)}</div>
       </div>
-      <div class="sum-card green">
+      <div class="sum-card green" onclick="navTo('relatorios')">
         <div class="sum-label-s">Receitas</div>
         <div class="sum-value-s green">${fmtBRLCompact(s.rec)}</div>
       </div>
-      <div class="sum-card red">
+      <div class="sum-card red" onclick="navTo('relatorios')">
         <div class="sum-label-s">Despesas</div>
         <div class="sum-value-s red">${fmtBRLCompact(s.exp)}</div>
       </div>
-      <div class="sum-card teal" onclick="navTo('poupanca')" style="cursor:pointer">
+      <div class="sum-card teal" onclick="navTo('poupanca')">
         <div class="sum-label-s">Poupança</div>
         <div class="sum-value-s teal">${fmtBRLCompact(totalSav)}</div>
       </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px">
+      <div class="panel-hd">
+        <h3><i class="ti ti-building-bank"></i> Bancos</h3>
+        <a onclick="navTo('contas')">ver todos <i class="ti ti-arrow-right"></i></a>
+      </div>
+      ${renderBanksScrollHTML()}
     </div>
 
     <div class="panel" style="margin-bottom:12px">
@@ -914,6 +956,35 @@ function renderInicio(){
     </div>`;
 
   if(_selCalDay) renderDayDetail(_selCalDay);
+}
+
+/* ================================================================
+   BANCOS — MINI CARDS HORIZONTAIS (HOME)
+================================================================ */
+function renderBanksScrollHTML(){
+  if(!ACCS.length){
+    return `<div class="banks-scroll-wrap"><div class="banks-scroll">
+      <div class="bank-mini-add" onclick="openAccModal()" style="width:100%;min-height:80px">
+        <i class="ti ti-plus"></i><span>Criar primeiro banco/conta</span>
+      </div>
+    </div></div>`;
+  }
+  return `<div class="banks-scroll-wrap"><div class="banks-scroll">
+    ${ACCS.map(a=>`
+      <div class="bank-mini-card" onclick="openAccModal(${a.id})">
+        <div class="bank-mini-bar" style="background:${a.color}"></div>
+        <div class="bank-mini-top">
+          <div class="bank-mini-icon" style="background:${a.color}22">${a.icon||'🏦'}</div>
+          <div class="bank-mini-edit" onclick="event.stopPropagation();openAccModal(${a.id})"><i class="ti ti-pencil"></i></div>
+        </div>
+        <div class="bank-mini-name">${a.name}</div>
+        <div class="bank-mini-bal ${a.bal>=0?'pos':'neg'}">${fmtBRL(a.bal)}</div>
+      </div>
+    `).join('')}
+    <div class="bank-mini-add" onclick="openAccModal()">
+      <i class="ti ti-plus"></i><span>Novo banco</span>
+    </div>
+  </div></div>`;
 }
 
 /* ================================================================
