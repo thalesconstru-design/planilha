@@ -774,10 +774,18 @@ body{
       if(!merged.customCategories) merged.customCategories = { income: DEFAULT_INCOME_CATS.slice(), expense: DEFAULT_EXPENSE_CATS.slice() };
       if(!merged.pots) merged.pots = [];
       if(!merged.goals) merged.goals = [];
+      if(!Array.isArray(merged.accounts) || merged.accounts.length === 0){
+        merged.accounts = [ {id: uid(), name:"Carteira", balance: 0} ];
+      }
+      if(!Array.isArray(merged.transactions)) merged.transactions = [];
+      if(typeof merged.selectedMonth !== "number") merged.selectedMonth = new Date().getMonth();
       return merged;
     }catch(e){ return defaultState(); }
   }
-  function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  function saveState(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    catch(e){ console.warn("Não foi possível salvar os dados localmente.", e); }
+  }
   function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 
   function fmtMoney(v){
@@ -790,6 +798,7 @@ body{
     return v.toFixed(0);
   }
   function fmtDate(iso){
+    if(!iso) return "—";
     const [y,m,d] = iso.split("-").map(Number);
     return String(d).padStart(2,'0')+"/"+String(m).padStart(2,'0')+"/"+y;
   }
@@ -799,6 +808,7 @@ body{
   }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   function resolveVar(v){
+    if(typeof v !== 'string') return '#999';
     if(!v.startsWith('var(')) return v;
     const name = v.slice(4,-1);
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#999';
@@ -994,6 +1004,7 @@ body{
     const val = parseFloat(document.getElementById("incValue").value);
     if(!desc){ toast("Digite uma descrição"); return; }
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
+    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("incAccount").value;
     const category = incCurrentCategory || "Outros";
     addCategoryIfNew("income", category);
@@ -1017,7 +1028,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir receita?", text:"Essa receita será removida e o saldo da conta será ajustado.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      applyBalanceDelta(tx.accountId, "income", tx.value, -1);
+      if(tx) applyBalanceDelta(tx.accountId, "income", tx.value, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Receita excluída"); renderAll();
     });
@@ -1060,6 +1071,7 @@ body{
     const val = parseFloat(document.getElementById("expValue").value);
     if(!desc){ toast("Digite uma descrição"); return; }
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
+    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("expAccount").value;
     const category = expCurrentCategory || "Outros";
     addCategoryIfNew("expense", category);
@@ -1083,7 +1095,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir despesa?", text:"Essa despesa será removida e o saldo da conta será ajustado.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      applyBalanceDelta(tx.accountId, "expense", tx.value, -1);
+      if(tx) applyBalanceDelta(tx.accountId, "expense", tx.value, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Despesa excluída"); renderAll();
     });
@@ -1139,6 +1151,7 @@ body{
     const val = parseFloat(document.getElementById("savValue").value);
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
     if(!selectedPotId){ toast("Escolha uma reserva"); return; }
+    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("savAccount").value;
     const note = document.getElementById("savNote").value.trim();
     const date = chosenDates.saving;
@@ -1171,7 +1184,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir registro?", text:"Esse movimento será removido e os saldos ajustados.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      applySavingDelta(tx.potId, tx.accountId, tx.value, tx.direction, -1);
+      if(tx) applySavingDelta(tx.potId, tx.accountId, tx.value, tx.direction, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Registro excluído"); renderAll();
     });
@@ -1191,7 +1204,8 @@ body{
       box.innerHTML = state.pots.map(p=>`<div class="cat-chip ${selectedPotId===p.id?'active':''}" data-id="${p.id}">${escapeHtml(p.name)} · ${fmtMoney(p.balance)}</div>`).join("");
       box.querySelectorAll(".cat-chip").forEach(ch=> ch.addEventListener("click", ()=>{
         selectedPotId = ch.dataset.id;
-        document.getElementById("savPotLabel").textContent = state.pots.find(p=>p.id===selectedPotId).name;
+        const p = state.pots.find(p=>p.id===selectedPotId);
+        document.getElementById("savPotLabel").textContent = p ? p.name : "Selecionar reserva";
         openSheet("sheetSaving");
       }));
     }
@@ -1264,7 +1278,7 @@ body{
   function openPicker(target){
     pickerTarget = target;
     const src = chosenDates[target] || todayIso();
-    const [y,m,d] = src.split("-").map(Number);
+    const [y,m] = src.split("-").map(Number);
     pickerDate = new Date(y, m-1, 1);
     pickerSelected = src;
     renderPicker();
