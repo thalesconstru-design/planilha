@@ -10,14 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --cement:#1A1816;
-  --cement-deep:#242019;
-  --surface:#211D1A;
-  --surface-2:#2A2521;
-  --ink:#EDE7DD;
-  --ink-soft:#A79B89;
-  --ink-faint:#6E6558;
-  --line:#3A342C;
+  --cement:#0F131C;
+  --cement-deep:#182034;
+  --surface:#141926;
+  --surface-2:#1C2536;
+  --ink:#E7EBF5;
+  --ink-soft:#8C97B8;
+  --ink-faint:#565F80;
+  --line:#293350;
   --income:#7FB08A;
   --income-bg:rgba(127,176,138,0.14);
   --expense:#D98C72;
@@ -26,8 +26,8 @@
   --saving-bg:rgba(212,184,118,0.14);
   --forecast:#B3A6D9;
   --forecast-bg:rgba(179,166,217,0.14);
-  --accent:#C98452;
-  --accent-2:#D9714A;
+  --accent:#4C82C9;
+  --accent-2:#3560A0;
   --shadow: 0 12px 30px -14px rgba(0,0,0,0.6);
   --radius-lg:24px;
   --radius-md:16px;
@@ -36,18 +36,6 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-[data-theme="verde"]{ --accent:#5C9770; --accent-2:#7AB88C; }
-[data-theme="azul"]{ --accent:#5B84A8; --accent-2:#7AA3C4; }
-[data-theme="vinho"]{ --accent:#A85C74; --accent-2:#C97D91; }
-[data-theme="grafite"]{ --accent:#8A8478; --accent-2:#A8A296; }
-[data-theme="dourado"]{ --accent:#D4A83F; --accent-2:#E8C266; }
-[data-theme="petroleo"]{ --accent:#4C9797; --accent-2:#66B3B3; }
-[data-theme="rosa"]{ --accent:#C9899C; --accent-2:#DBA6B6; }
-[data-theme="lilas"]{ --accent:#9184BE; --accent-2:#ABA0D1; }
-[data-theme="coral"]{ --accent:#DB7A5F; --accent-2:#E89579; }
-[data-theme="oliva"]{ --accent:#93A35C; --accent-2:#ABB87D; }
-[data-theme="marinho"]{ --accent:#5875A8; --accent-2:#7591C0; }
-
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{
@@ -67,9 +55,15 @@ body{
 }
 .app-scroll::-webkit-scrollbar{display:none;}
 
-.screen{display:none; animation: fadein .3s ease;}
+.screen{display:none; animation: fadein .3s ease; min-height:100%;}
 .screen.active{display:block;}
 @keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+/* tons mesclados por seção — cada área com uma atmosfera própria */
+#screen-home{ background: radial-gradient(120% 55% at 50% 0%, #182236 0%, #0F131C 60%); }
+#screen-bank{ background: radial-gradient(120% 55% at 50% 0%, #16243F 0%, #0F131C 60%); }
+#screen-calendar{ background: radial-gradient(120% 55% at 50% 0%, #10202A 0%, #0F131C 60%); }
+#screen-settings{ background: radial-gradient(120% 55% at 50% 0%, #1A1E33 0%, #0F131C 60%); }
 
 .topbar{ padding: var(--sp-2) var(--sp-6) var(--sp-5); }
 .topbar .eyebrow{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); font-weight:700; }
@@ -81,13 +75,13 @@ body{
 /* ---- Dashboard ---- */
 .balance-card{
   margin:0 var(--sp-5) var(--sp-4); background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  border-radius: var(--radius-lg); padding:var(--sp-6) var(--sp-5); color:#2A1F16;
+  border-radius: var(--radius-lg); padding:var(--sp-6) var(--sp-5); color:#0E1524;
   box-shadow: var(--shadow); position:relative; overflow:hidden;
 }
 .balance-card::after{ content:""; position:absolute; right:-40px; top:-40px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.12); }
 .balance-label{font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.75; font-weight:700;}
 .balance-value{font-family:'Fraunces',serif; font-weight:700; font-size:34px; margin-top:6px; line-height:1.1;}
-.balance-value.negative{color:#4A241A;}
+.balance-value.negative{color:#1B2C4A;}
 .balance-sub{font-size:12px; opacity:.7; margin-top:6px;}
 
 .summary-row{ display:flex; gap:var(--sp-3); margin:0 var(--sp-5) var(--sp-4); }
@@ -122,7 +116,7 @@ body{
   flex:0 0 auto; padding:9px 14px; border-radius:999px; background:var(--surface-2);
   border:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; transition:all .15s ease;
 }
-.month-chip.active{ background: var(--accent); color:#241a12; border-color:var(--accent); box-shadow:0 6px 14px -6px rgba(0,0,0,0.5); }
+.month-chip.active{ background: var(--accent); color:#0E1524; border-color:var(--accent); box-shadow:0 6px 14px -6px rgba(0,0,0,0.5); }
 
 .month-summary{ margin:0 var(--sp-5) var(--sp-5); background:var(--surface-2); border-radius:var(--radius-md); padding:var(--sp-4); border:1px solid var(--line); display:flex; justify-content:space-between; }
 .month-summary .item{text-align:center; flex:1;}
@@ -172,10 +166,16 @@ body{
 .nav-btn:active{transform:scale(0.9);}
 .fab{
   width:56px; height:56px; border-radius:50%; border:none; margin-top:-28px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#241a12; font-size:25px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0E1524; font-size:25px;
   display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 12px 24px -8px rgba(0,0,0,0.6); flex-shrink:0; transition:transform .15s ease;
 }
 .fab:active{transform:scale(0.9) rotate(45deg);}
+.fab.fab-expand{ animation: fabExpand 0.45s cubic-bezier(.3,1.35,.35,1); }
+@keyframes fabExpand{
+  0%{ transform:scale(1); box-shadow:0 12px 24px -8px rgba(0,0,0,0.6); }
+  35%{ transform:scale(1.4); box-shadow:0 0 0 16px rgba(76,130,201,0.18), 0 12px 24px -8px rgba(0,0,0,0.6); }
+  100%{ transform:scale(1); box-shadow:0 12px 24px -8px rgba(0,0,0,0.6); }
+}
 
 /* ---- Modal / overlay ---- */
 .overlay{ position:absolute; inset:0; background:rgba(0,0,0,0.55); display:none; align-items:flex-end; z-index:50; }
@@ -208,7 +208,7 @@ body{
 
 .btn{ width:100%; padding:15px; border-radius:var(--radius-sm); border:none; font-weight:700; font-size:14.5px; cursor:pointer; margin-top:var(--sp-2); transition:transform .15s ease, opacity .15s ease; }
 .btn:active{transform:scale(0.97);}
-.btn-primary{background:var(--accent); color:#241a12;}
+.btn-primary{background:var(--accent); color:#0E1524;}
 .btn-income{background:var(--income); color:#152018;}
 .btn-expense{background:var(--expense); color:#2a1610;}
 .btn-saving{background:var(--saving); color:#2a2210;}
@@ -217,7 +217,14 @@ body{
 .btn-danger{background:var(--expense-bg); color:var(--expense);}
 
 /* choice sheet */
-.choice-opt{ display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-md); background:var(--surface-2); border:1.5px solid var(--line); margin-bottom:var(--sp-2); cursor:pointer; }
+.choice-opt{ display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-md); background:var(--surface-2); border:1.5px solid var(--line); margin-bottom:var(--sp-2); cursor:pointer;
+  opacity:0; transform:translateY(18px) scale(0.9) rotate(-3deg); transform-origin:top center; }
+.choice-opt.fan-in{ animation: fanIn 0.5s cubic-bezier(.22,1.15,.35,1) forwards; }
+@keyframes fanIn{
+  0%{ opacity:0; transform:translateY(18px) scale(0.88) rotate(-4deg); }
+  55%{ opacity:1; }
+  100%{ opacity:1; transform:translateY(0) scale(1) rotate(0deg); }
+}
 .choice-opt .ic{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;}
 .choice-opt.income .ic{background:var(--income-bg); color:var(--income);}
 .choice-opt.expense .ic{background:var(--expense-bg); color:var(--expense);}
@@ -236,9 +243,13 @@ body{
 .cal-day{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:13px; cursor:pointer; position:relative; font-weight:600; }
 .cal-day.muted{color:var(--ink-faint); opacity:.4;}
 .cal-day.today{border:1.5px solid var(--accent);}
-.cal-day.selected{background:var(--accent); color:#241a12;}
+.cal-day.selected{background:var(--accent); color:#0E1524;}
 .cal-day .mark{position:absolute; bottom:2px; display:flex; gap:2px;}
 .cal-day .mark i{width:4px; height:4px; border-radius:50%; display:block;}
+.cal-day.day-pop{ animation: dayPop 0.32s cubic-bezier(.22,1.15,.35,1) both; }
+@keyframes dayPop{ from{opacity:0; transform:scale(0.4);} to{opacity:1; transform:scale(1);} }
+.cal-screen-card.cal-enter{ animation: calEnter 0.5s cubic-bezier(.2,.85,.3,1); }
+@keyframes calEnter{ from{opacity:0; transform:scale(0.88) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
 
 /* ---- List view (multi-select) ---- */
 .lv-filter{margin-bottom:var(--sp-3);}
@@ -251,7 +262,7 @@ body{
 
 /* ---- category / pot picker chips ---- */
 .cat-chip{ padding:9px 14px; border-radius:999px; background:var(--surface-2); border:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; display:inline-block; margin:0 6px 8px 0; }
-.cat-chip.active{ background:var(--accent); color:#241a12; border-color:var(--accent); }
+.cat-chip.active{ background:var(--accent); color:#0E1524; border-color:var(--accent); }
 .chip-wrap{display:flex; flex-wrap:wrap; margin-bottom:var(--sp-4);}
 
 /* ---- Bank / pots screen ---- */
@@ -263,12 +274,32 @@ body{
 .acc-del{margin-left:auto; background:none; border:none; font-size:16px; color:var(--ink-faint); cursor:pointer; padding:8px;}
 .add-acc-btn{ margin:var(--sp-1) var(--sp-5) var(--sp-5); padding:var(--sp-4); border-radius:var(--radius-md); border:1.5px dashed var(--line); text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; cursor:pointer; background:transparent; width:calc(100% - 40px); }
 
-.pot-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-2);}
-.pot-name{font-weight:700;font-size:14px;}
-.pot-bal{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
-.pot-row-actions{display:flex;gap:6px;}
-.pot-act{width:30px;height:30px;border-radius:50%;border:none;background:var(--cement-deep);color:var(--ink);font-size:14px;cursor:pointer;}
-.pot-act.del{color:var(--expense);}
+.pot-grid{display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); margin-bottom:var(--sp-4);}
+.pot-tile{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:20px; padding:var(--sp-4) var(--sp-2);
+  text-align:center; cursor:pointer; transition:transform .15s ease;
+  opacity:0; transform:translateY(10px) scale(0.92);
+}
+.pot-tile.tile-in{ animation: tilePop 0.4s cubic-bezier(.22,1.15,.35,1) forwards; }
+@keyframes tilePop{ from{opacity:0; transform:translateY(10px) scale(0.9);} to{opacity:1; transform:translateY(0) scale(1);} }
+.pot-tile:active{transform:scale(0.95);}
+.pot-tile-ring{display:flex; justify-content:center; margin-bottom:var(--sp-2);}
+.pot-tile-name{font-weight:700; font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 4px;}
+.pot-tile-bal{font-size:11px; color:var(--ink-soft); margin-top:2px; font-family:'JetBrains Mono',monospace;}
+.pot-add-tile{
+  background:transparent; border:1.5px dashed var(--line); border-radius:20px; padding:var(--sp-4) var(--sp-2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; color:var(--ink-soft);
+  min-height:132px;
+}
+.pot-add-tile .plus-ic{font-size:26px; color:var(--ink-faint);}
+.pot-add-tile .lbl{font-size:11.5px; font-weight:700;}
+
+.pot-detail-ring{display:flex; justify-content:center; margin:var(--sp-2) 0 var(--sp-4);}
+.pot-detail-name{text-align:center; font-family:'Fraunces',serif; font-weight:700; font-size:20px;}
+.pot-detail-balance{text-align:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:22px; color:var(--saving); margin-top:4px;}
+.pot-detail-meta{text-align:center; font-size:12px; color:var(--ink-soft); margin-top:4px; margin-bottom:var(--sp-5);}
+.pot-detail-actions{display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2);}
+.pot-detail-actions .btn{margin-top:0;}
 
 /* ---- Calendar screen ---- */
 .cal-screen-card{margin:0 var(--sp-5) var(--sp-5); background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-lg); padding:var(--sp-5) var(--sp-4);}
@@ -283,9 +314,6 @@ body{
 .set-row .s{font-size:11px; color:var(--ink-soft); margin-top:2px;}
 .pos-text{color:var(--income);}
 .neg-text{color:var(--expense);}
-.swatches{display:flex; gap:8px; flex-wrap:wrap; max-width:190px; justify-content:flex-end;}
-.swatch{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; flex-shrink:0;}
-.swatch.selected{border-color:var(--ink);}
 .toggle{width:44px; height:26px; border-radius:99px; background:var(--line); position:relative; cursor:pointer; flex-shrink:0;}
 .toggle::after{content:""; position:absolute; width:20px; height:20px; border-radius:50%; background:#EDE7DD; top:3px; left:3px; transition:transform .2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.4);}
 .toggle.on{background:var(--accent);}
@@ -372,7 +400,7 @@ body{
         <div class="pots-card-left">
           <div class="pots-ic">🐷</div>
           <div>
-            <div class="pots-lbl">Guardado</div>
+            <div class="pots-lbl">Porquinho</div>
             <div class="pots-val mono" id="potsTotal">R$ 0,00</div>
           </div>
         </div>
@@ -434,14 +462,6 @@ body{
       <div class="topbar">
         <div class="eyebrow">Ajustes</div>
         <h1>Configurações</h1>
-      </div>
-
-      <div class="settings-group">
-        <h3>Aparência</h3>
-        <div class="set-row">
-          <div><div class="t">Cor de destaque</div><div class="s">Paleta escura, escolha o tom</div></div>
-          <div class="swatches" id="themeSwatches"></div>
-        </div>
       </div>
 
       <div class="settings-group">
@@ -507,8 +527,6 @@ body{
       <div class="sheet-sub">O que você quer fazer?</div>
       <div class="choice-opt income" data-open="income"><div class="ic">↗️</div><div><div class="t">Receita</div><div class="s">Dinheiro que entrou</div></div></div>
       <div class="choice-opt expense" data-open="expense"><div class="ic">↙️</div><div><div class="t">Despesa</div><div class="s">Dinheiro que saiu</div></div></div>
-      <div class="choice-opt saving" data-open="saving-in"><div class="ic">🐷</div><div><div class="t">Guardar dinheiro</div><div class="s">Sai da conta, entra na reserva</div></div></div>
-      <div class="choice-opt saving" data-open="saving-out"><div class="ic">💸</div><div><div class="t">Resgatar dinheiro</div><div class="s">Sai da reserva, volta pra conta</div></div></div>
       <div class="choice-opt neutral" data-open="charts"><div class="ic">📊</div><div><div class="t">Gráficos</div><div class="s">Pizza, linha ou barra por categoria</div></div></div>
       <div class="choice-opt neutral" data-open="goals"><div class="ic">🎯</div><div><div class="t">Metas</div><div class="s">Acompanhe seus objetivos</div></div></div>
       <div class="choice-opt neutral" data-open="transactions"><div class="ic">🧾</div><div><div class="t">Transações</div><div class="s">Veja por ano e por mês</div></div></div>
@@ -564,7 +582,7 @@ body{
       <div class="field"><label>Descrição</label><input type="text" id="savDesc" placeholder="Ex: Aporte mensal"></div>
       <div class="field"><label>Valor</label><div class="value-input"><span class="cur">R$</span><input type="number" step="0.01" id="savValue" placeholder="0,00"></div></div>
       <div class="field"><label>Data</label><div class="fake-input" id="savDateBtn"><span id="savDateLabel">Selecionar data</span><span>📅</span></div></div>
-      <div class="field"><label id="savPotFieldLabel">Reserva</label><div class="fake-input" id="savPotBtn"><span id="savPotLabel">Selecionar reserva</span><span>▾</span></div></div>
+      <div class="field"><label id="savPotFieldLabel">Porquinho</label><div class="fake-input" id="savPotBtn"><span id="savPotLabel">Selecionar porquinho</span><span>▾</span></div></div>
       <div class="field"><label id="savAccountLabel">Conta de origem</label><select id="savAccount"></select></div>
       <div class="field"><label>Observação</label><textarea id="savNote" placeholder="Opcional"></textarea></div>
       <button class="btn btn-saving" id="savSave">Guardar valor</button>
@@ -575,19 +593,47 @@ body{
     <!-- Pot picker -->
     <div class="sheet" id="sheetPotPicker" style="display:none;">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">Escolher reserva</div>
+      <div class="sheet-title">Escolher porquinho</div>
       <div class="chip-wrap" id="potPickerChips"></div>
-      <div class="field" id="potPickerAddRow"><label>Nova reserva</label><div class="inline-add"><input type="text" id="potPickerNewName" placeholder="Ex: Reserva de emergência, Carro..."><button class="btn btn-primary" id="potPickerCreateBtn">Criar</button></div></div>
+      <div class="field" id="potPickerAddRow"><label>Novo porquinho</label><div class="inline-add"><input type="text" id="potPickerNewName" placeholder="Ex: Reserva de emergência, Carro..."><button class="btn btn-primary" id="potPickerCreateBtn">Criar</button></div></div>
     </div>
 
     <!-- Pots overview -->
     <div class="sheet" id="sheetPotsOverview" style="display:none;">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">Minhas reservas 🐷</div>
+      <div class="sheet-title">Meus porquinhos 🐷</div>
       <div class="sheet-sub">Total guardado: <span class="mono" id="potsOverviewTotal">R$ 0,00</span></div>
-      <div id="potsOverviewList"></div>
-      <div class="field"><label>Nova reserva</label><div class="inline-add"><input type="text" id="newPotName" placeholder="Ex: Viagem"><button class="btn btn-primary" id="newPotBtn">Criar</button></div></div>
+      <div class="pot-grid" id="potsOverviewGrid"></div>
+      <div class="field"><label>Novo porquinho</label><div class="inline-add"><input type="text" id="newPotName" placeholder="Ex: Viagem, Carro, Reserva de emergência..."><button class="btn btn-primary" id="newPotBtn">Criar</button></div></div>
       <button class="btn btn-ghost" id="potsOverviewClose">Fechar</button>
+    </div>
+
+    <!-- Pot detail (experiência estilo Meu Porquinho) -->
+    <div class="sheet" id="sheetPotDetail" style="display:none;">
+      <div class="sheet-handle"></div>
+      <div class="pot-detail-ring" id="potDetailRing"></div>
+      <div class="pot-detail-name" id="potDetailName">Porquinho</div>
+      <div class="pot-detail-balance mono" id="potDetailBalance">R$ 0,00</div>
+      <div class="pot-detail-meta" id="potDetailMeta">Sem meta definida</div>
+      <div class="pot-detail-actions">
+        <button class="btn btn-saving" id="potDetailIn">＋ Guardar</button>
+        <button class="btn btn-forecast" id="potDetailOut">－ Retirar</button>
+        <button class="btn btn-primary" id="potDetailEdit">✎ Editar</button>
+        <button class="btn btn-danger" id="potDetailDel">🗑 Excluir</button>
+      </div>
+      <button class="btn btn-ghost" id="potDetailClose" style="margin-top:var(--sp-3);">Voltar</button>
+    </div>
+
+    <!-- Pot edit (nome + meta) -->
+    <div class="sheet" id="sheetPotEdit" style="display:none;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Editar porquinho 🐷</div>
+      <div class="field"><label>Nome</label><input type="text" id="potEditName" placeholder="Ex: Viagem"></div>
+      <div class="field"><label>Meta (opcional)</label><div class="value-input"><span class="cur">R$</span><input type="number" step="0.01" id="potEditTarget" placeholder="0,00"></div>
+        <div style="text-align:right; margin-top:6px;"><span id="potEditClearTarget" style="font-size:12px; color:var(--ink-soft); cursor:pointer; text-decoration:underline;">Remover meta</span></div>
+      </div>
+      <button class="btn btn-primary" id="potEditSave">Salvar</button>
+      <button class="btn btn-ghost" id="potEditCancel">Cancelar</button>
     </div>
 
     <!-- Mini calendar picker -->
@@ -735,21 +781,6 @@ body{
   const DOW = ["D","S","T","Q","Q","S","S"];
   const DEFAULT_INCOME_CATS = ["Salário","Freelance","Investimentos","Presente","Reembolso","Outros"];
   const DEFAULT_EXPENSE_CATS = ["Lazer","Moradia","Mercado","iFood","Transporte","Saúde","Educação","Contas fixas","Compras","Outros"];
-  const THEMES = [
-    {id:"terracota", label:"Terracota", hex:"#C98452"},
-    {id:"verde", label:"Verde", hex:"#5C9770"},
-    {id:"azul", label:"Azul", hex:"#5B84A8"},
-    {id:"vinho", label:"Vinho", hex:"#A85C74"},
-    {id:"grafite", label:"Grafite", hex:"#8A8478"},
-    {id:"dourado", label:"Dourado", hex:"#D4A83F"},
-    {id:"petroleo", label:"Petróleo", hex:"#4C9797"},
-    {id:"rosa", label:"Rosa", hex:"#C9899C"},
-    {id:"lilas", label:"Lilás", hex:"#9184BE"},
-    {id:"coral", label:"Coral", hex:"#DB7A5F"},
-    {id:"oliva", label:"Oliva", hex:"#93A35C"},
-    {id:"marinho", label:"Marinho", hex:"#5875A8"},
-  ];
-
   let state = loadState();
 
   function defaultState(){
@@ -774,18 +805,10 @@ body{
       if(!merged.customCategories) merged.customCategories = { income: DEFAULT_INCOME_CATS.slice(), expense: DEFAULT_EXPENSE_CATS.slice() };
       if(!merged.pots) merged.pots = [];
       if(!merged.goals) merged.goals = [];
-      if(!Array.isArray(merged.accounts) || merged.accounts.length === 0){
-        merged.accounts = [ {id: uid(), name:"Carteira", balance: 0} ];
-      }
-      if(!Array.isArray(merged.transactions)) merged.transactions = [];
-      if(typeof merged.selectedMonth !== "number") merged.selectedMonth = new Date().getMonth();
       return merged;
     }catch(e){ return defaultState(); }
   }
-  function saveState(){
-    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-    catch(e){ console.warn("Não foi possível salvar os dados localmente.", e); }
-  }
+  function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
   function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 
   function fmtMoney(v){
@@ -798,7 +821,6 @@ body{
     return v.toFixed(0);
   }
   function fmtDate(iso){
-    if(!iso) return "—";
     const [y,m,d] = iso.split("-").map(Number);
     return String(d).padStart(2,'0')+"/"+String(m).padStart(2,'0')+"/"+y;
   }
@@ -808,7 +830,6 @@ body{
   }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   function resolveVar(v){
-    if(typeof v !== 'string') return '#999';
     if(!v.startsWith('var(')) return v;
     const name = v.slice(4,-1);
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#999';
@@ -821,7 +842,7 @@ body{
     screens.forEach(s=>s.classList.toggle("active", s.id === "screen-"+name));
     navBtns.forEach(b=>b.classList.toggle("active", b.dataset.screen === name));
     document.getElementById("appScroll").scrollTop = 0;
-    if(name === "calendar") renderCalendarScreen();
+    if(name === "calendar") renderCalendarScreen(true);
     if(name === "bank") renderBankScreen();
     if(name === "settings") renderSettingsScreen();
     if(name === "home") renderHome();
@@ -862,7 +883,7 @@ body{
   /* ---------------- OVERLAY / SHEETS ---------------- */
   const overlay = document.getElementById("overlay");
   const allSheets = ["sheetChoice","sheetIncome","sheetExpense","sheetCatPicker","sheetSaving","sheetPotPicker",
-    "sheetPotsOverview","sheetCalPicker","sheetAddAcc","sheetListView","sheetCharts","sheetGoals","sheetGoalForm",
+    "sheetPotsOverview","sheetPotDetail","sheetPotEdit","sheetCalPicker","sheetAddAcc","sheetListView","sheetCharts","sheetGoals","sheetGoalForm",
     "sheetTransactions","sheetForecast"];
   function openSheet(id){
     allSheets.forEach(s=> document.getElementById(s).style.display = (s===id?"block":"none"));
@@ -875,7 +896,21 @@ body{
   }
   overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeOverlay(); });
 
-  document.getElementById("fabBtn").addEventListener("click", ()=> openSheet("sheetChoice"));
+  document.getElementById("fabBtn").addEventListener("click", openChoiceSheetFan);
+  function openChoiceSheetFan(){
+    const fab = document.getElementById("fabBtn");
+    fab.classList.remove("fab-expand");
+    void fab.offsetWidth;
+    fab.classList.add("fab-expand");
+    openSheet("sheetChoice");
+    const opts = document.querySelectorAll("#sheetChoice .choice-opt");
+    opts.forEach((el,i)=>{
+      el.classList.remove("fan-in");
+      void el.offsetWidth;
+      el.style.animationDelay = (i*55)+"ms";
+      el.classList.add("fan-in");
+    });
+  }
   document.getElementById("cardReceitas").addEventListener("click", ()=> openIncomeSheet(null));
   document.getElementById("cardDespesas").addEventListener("click", ()=> openExpenseSheet(null));
   document.getElementById("plusIncome").addEventListener("click", (e)=>{ e.stopPropagation(); openListView("income"); });
@@ -887,8 +922,6 @@ body{
       const type = el.dataset.open;
       if(type === "income") openIncomeSheet(null);
       if(type === "expense") openExpenseSheet(null);
-      if(type === "saving-in"){ selectedPotId=null; openSavingSheet(null,"in"); }
-      if(type === "saving-out"){ selectedPotId=null; openSavingSheet(null,"out"); }
       if(type === "charts") openChartsSheet();
       if(type === "goals") openGoalsSheet();
       if(type === "transactions") openTransactionsSheet();
@@ -1004,7 +1037,6 @@ body{
     const val = parseFloat(document.getElementById("incValue").value);
     if(!desc){ toast("Digite uma descrição"); return; }
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
-    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("incAccount").value;
     const category = incCurrentCategory || "Outros";
     addCategoryIfNew("income", category);
@@ -1028,7 +1060,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir receita?", text:"Essa receita será removida e o saldo da conta será ajustado.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      if(tx) applyBalanceDelta(tx.accountId, "income", tx.value, -1);
+      applyBalanceDelta(tx.accountId, "income", tx.value, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Receita excluída"); renderAll();
     });
@@ -1071,7 +1103,6 @@ body{
     const val = parseFloat(document.getElementById("expValue").value);
     if(!desc){ toast("Digite uma descrição"); return; }
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
-    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("expAccount").value;
     const category = expCurrentCategory || "Outros";
     addCategoryIfNew("expense", category);
@@ -1095,7 +1126,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir despesa?", text:"Essa despesa será removida e o saldo da conta será ajustado.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      if(tx) applyBalanceDelta(tx.accountId, "expense", tx.value, -1);
+      applyBalanceDelta(tx.accountId, "expense", tx.value, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Despesa excluída"); renderAll();
     });
@@ -1151,7 +1182,6 @@ body{
     const val = parseFloat(document.getElementById("savValue").value);
     if(!val || val<=0){ toast("Digite um valor válido"); return; }
     if(!selectedPotId){ toast("Escolha uma reserva"); return; }
-    if(state.accounts.length === 0){ toast("Cadastre uma conta primeiro"); return; }
     const accId = document.getElementById("savAccount").value;
     const note = document.getElementById("savNote").value.trim();
     const date = chosenDates.saving;
@@ -1184,7 +1214,7 @@ body{
     if(!editState.id) return;
     confirmDialog({icon:"🗑️", title:"Excluir registro?", text:"Esse movimento será removido e os saldos ajustados.", okLabel:"Excluir"}, ()=>{
       const tx = state.transactions.find(x=>x.id===editState.id);
-      if(tx) applySavingDelta(tx.potId, tx.accountId, tx.value, tx.direction, -1);
+      applySavingDelta(tx.potId, tx.accountId, tx.value, tx.direction, -1);
       state.transactions = state.transactions.filter(x=>x.id!==editState.id);
       saveState(); closeOverlay(); toast("Registro excluído"); renderAll();
     });
@@ -1204,8 +1234,7 @@ body{
       box.innerHTML = state.pots.map(p=>`<div class="cat-chip ${selectedPotId===p.id?'active':''}" data-id="${p.id}">${escapeHtml(p.name)} · ${fmtMoney(p.balance)}</div>`).join("");
       box.querySelectorAll(".cat-chip").forEach(ch=> ch.addEventListener("click", ()=>{
         selectedPotId = ch.dataset.id;
-        const p = state.pots.find(p=>p.id===selectedPotId);
-        document.getElementById("savPotLabel").textContent = p ? p.name : "Selecionar reserva";
+        document.getElementById("savPotLabel").textContent = state.pots.find(p=>p.id===selectedPotId).name;
         openSheet("sheetSaving");
       }));
     }
@@ -1213,7 +1242,7 @@ body{
   document.getElementById("potPickerCreateBtn").addEventListener("click", ()=>{
     const name = document.getElementById("potPickerNewName").value.trim();
     if(!name){ toast("Digite o nome da reserva"); return; }
-    const pot = {id:uid(), name, balance:0};
+    const pot = {id:uid(), name, balance:0, target:null};
     state.pots.push(pot);
     saveState();
     selectedPotId = pot.id;
@@ -1222,50 +1251,117 @@ body{
     openSheet("sheetSaving");
   });
 
-  /* ---------------- POTS OVERVIEW ---------------- */
+  /* ---------------- POTS OVERVIEW (estilo "Meu Porquinho") ---------------- */
+  let activePotId = null;
+
+  function potPct(p){
+    if(!p.target || p.target<=0) return null;
+    return Math.max(0, Math.min(100, (p.balance/p.target)*100));
+  }
+  function svgRing(pct, big){
+    const size = big ? 128 : 66;
+    const r = big ? 52 : 27;
+    const stroke = big ? 11 : 6;
+    const c = 2*Math.PI*r;
+    const filled = pct===null ? 0 : (pct/100)*c;
+    const trackColor = resolveVar("var(--cement-deep)");
+    const fillColor = resolveVar("var(--saving)");
+    const fontSize = big ? 40 : 24;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${trackColor}" stroke-width="${stroke}"/>
+      ${pct!==null ? `<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${fillColor}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${filled} ${c-filled}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dasharray .6s ease;"/>` : ""}
+      <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}">🐷</text>
+    </svg>`;
+  }
+
   function openPotsOverview(){ renderPotsOverview(); openSheet("sheetPotsOverview"); }
   document.getElementById("potsOverviewClose").addEventListener("click", closeOverlay);
+
   function renderPotsOverview(){
     const total = state.pots.reduce((s,p)=>s+p.balance,0);
     document.getElementById("potsOverviewTotal").textContent = fmtMoney(total);
-    const box = document.getElementById("potsOverviewList");
-    if(state.pots.length===0){
-      box.innerHTML = `<div class="empty-state">Nenhuma reserva criada ainda.<br>Crie uma abaixo para começar a guardar.</div>`;
-    } else {
-      box.innerHTML = state.pots.map(p=>`
-        <div class="pot-row">
-          <div>
-            <div class="pot-name">${escapeHtml(p.name)}</div>
-            <div class="pot-bal mono">${fmtMoney(p.balance)}</div>
-          </div>
-          <div class="pot-row-actions">
-            <button class="pot-act in" data-id="${p.id}" title="Guardar">＋</button>
-            <button class="pot-act out" data-id="${p.id}" title="Resgatar">－</button>
-            <button class="pot-act del" data-id="${p.id}" title="Excluir">🗑</button>
-          </div>
-        </div>`).join("");
-      box.querySelectorAll(".pot-act.in").forEach(btn=> btn.addEventListener("click", ()=>{ selectedPotId=btn.dataset.id; openSavingSheet(null,"in"); }));
-      box.querySelectorAll(".pot-act.out").forEach(btn=> btn.addEventListener("click", ()=>{ selectedPotId=btn.dataset.id; openSavingSheet(null,"out"); }));
-      box.querySelectorAll(".pot-act.del").forEach(btn=> btn.addEventListener("click", ()=> deletePot(btn.dataset.id)));
-    }
+    const grid = document.getElementById("potsOverviewGrid");
+    grid.innerHTML = state.pots.map(p=>`
+      <div class="pot-tile" data-id="${p.id}">
+        <div class="pot-tile-ring">${svgRing(potPct(p), false)}</div>
+        <div class="pot-tile-name">${escapeHtml(p.name)}</div>
+        <div class="pot-tile-bal">${fmtMoney(p.balance)}</div>
+      </div>`).join("") + `
+      <div class="pot-add-tile" id="potAddTile">
+        <div class="plus-ic">＋</div>
+        <div class="lbl">Novo porquinho</div>
+      </div>`;
+    grid.querySelectorAll(".pot-tile").forEach((el,i)=>{
+      el.style.animationDelay = (i*45)+"ms";
+      el.classList.add("tile-in");
+      el.addEventListener("click", ()=> openPotDetail(el.dataset.id));
+    });
+    document.getElementById("potAddTile").addEventListener("click", ()=> document.getElementById("newPotName").focus());
   }
+
+  function openPotDetail(id){ activePotId = id; renderPotDetail(); openSheet("sheetPotDetail"); }
+  function renderPotDetail(){
+    const p = state.pots.find(x=>x.id===activePotId);
+    if(!p) return;
+    const pct = potPct(p);
+    document.getElementById("potDetailRing").innerHTML = svgRing(pct, true);
+    document.getElementById("potDetailName").textContent = p.name;
+    document.getElementById("potDetailBalance").textContent = fmtMoney(p.balance);
+    document.getElementById("potDetailMeta").textContent = p.target
+      ? `Meta: ${fmtMoney(p.target)} · ${pct.toFixed(0)}% alcançado`
+      : "Sem meta definida";
+  }
+  document.getElementById("potDetailClose").addEventListener("click", ()=> openSheet("sheetPotsOverview"));
+  document.getElementById("potDetailIn").addEventListener("click", ()=>{ selectedPotId=activePotId; openSavingSheet(null,"in"); });
+  document.getElementById("potDetailOut").addEventListener("click", ()=>{ selectedPotId=activePotId; openSavingSheet(null,"out"); });
+  document.getElementById("potDetailEdit").addEventListener("click", ()=> openPotEdit(activePotId));
+  document.getElementById("potDetailDel").addEventListener("click", ()=> deletePot(activePotId, true));
+
+  function openPotEdit(id){
+    const p = state.pots.find(x=>x.id===id);
+    if(!p) return;
+    document.getElementById("potEditName").value = p.name;
+    document.getElementById("potEditTarget").value = p.target || "";
+    openSheet("sheetPotEdit");
+  }
+  document.getElementById("potEditCancel").addEventListener("click", ()=> openSheet("sheetPotDetail"));
+  document.getElementById("potEditClearTarget").addEventListener("click", ()=>{ document.getElementById("potEditTarget").value = ""; });
+  document.getElementById("potEditSave").addEventListener("click", ()=>{
+    const name = document.getElementById("potEditName").value.trim();
+    if(!name){ toast("Digite um nome"); return; }
+    const targetRaw = document.getElementById("potEditTarget").value;
+    const target = targetRaw ? parseFloat(targetRaw) : null;
+    const p = state.pots.find(x=>x.id===activePotId);
+    if(p){
+      p.name = name;
+      p.target = (target && target>0) ? target : null;
+      saveState();
+      toast("Porquinho atualizado ✓");
+    }
+    renderPotDetail();
+    renderPotsOverview();
+    openSheet("sheetPotDetail");
+  });
+
   document.getElementById("newPotBtn").addEventListener("click", ()=>{
     const name = document.getElementById("newPotName").value.trim();
-    if(!name){ toast("Digite o nome da reserva"); return; }
-    state.pots.push({id:uid(), name, balance:0});
+    if(!name){ toast("Digite o nome do porquinho"); return; }
+    state.pots.push({id:uid(), name, balance:0, target:null});
     saveState();
     document.getElementById("newPotName").value = "";
     renderPotsOverview();
-    toast("Reserva criada ✓");
+    toast("Porquinho criado ✓");
   });
-  function deletePot(id){
+  function deletePot(id, backToOverview){
     const p = state.pots.find(x=>x.id===id);
     if(!p) return;
-    if(Math.abs(p.balance) > 0.004){ toast("Resgate todo o saldo antes de excluir essa reserva."); return; }
-    confirmDialog({icon:"🗑️", title:"Excluir reserva?", text:`Excluir "${p.name}"?`, okLabel:"Excluir"}, ()=>{
+    if(Math.abs(p.balance) > 0.004){ toast("Retire todo o saldo antes de excluir esse porquinho."); return; }
+    confirmDialog({icon:"🗑️", title:"Excluir porquinho?", text:`Excluir "${p.name}"?`, okLabel:"Excluir"}, ()=>{
       state.pots = state.pots.filter(x=>x.id!==id);
       state.goals.forEach(g=>{ if(g.potId===id){ g.potId=null; g.manualCurrent = 0; } });
-      saveState(); toast("Reserva excluída"); renderPotsOverview(); renderHome();
+      saveState(); toast("Porquinho excluído");
+      if(backToOverview) openSheet("sheetPotsOverview");
+      renderPotsOverview(); renderHome();
     });
   }
 
@@ -1278,7 +1374,7 @@ body{
   function openPicker(target){
     pickerTarget = target;
     const src = chosenDates[target] || todayIso();
-    const [y,m] = src.split("-").map(Number);
+    const [y,m,d] = src.split("-").map(Number);
     pickerDate = new Date(y, m-1, 1);
     pickerSelected = src;
     renderPicker();
@@ -1294,8 +1390,9 @@ body{
     openSheet(sheetMap[pickerTarget]);
   });
 
-  function buildCalGrid(container, year, month, selectedIso, onPick, markFn){
+  function buildCalGrid(container, year, month, selectedIso, onPick, markFn, animate){
     container.innerHTML = "";
+    let dayIndex = 0;
     DOW.forEach(d=>{
       const el = document.createElement("div");
       el.className = "dow"; el.textContent = d;
@@ -1328,6 +1425,11 @@ body{
         }
       }
       el.addEventListener("click", ()=> onPick(iso));
+      if(animate){
+        el.style.animationDelay = (dayIndex*8)+"ms";
+        el.classList.add("day-pop");
+        dayIndex++;
+      }
       container.appendChild(el);
     }
     const totalCells = firstDow + daysInMonth;
@@ -1583,7 +1685,7 @@ body{
   let calScreenDate = new Date();
   let calSelectedDay = todayIso();
 
-  function renderCalendarScreen(){
+  function renderCalendarScreen(animateEntrance){
     document.getElementById("calScreenLabel").textContent = MONTH_FULL[calScreenDate.getMonth()] + " " + calScreenDate.getFullYear();
     buildCalGrid(document.getElementById("calScreenGrid"), calScreenDate.getFullYear(), calScreenDate.getMonth(), calSelectedDay,
       (iso)=>{ calSelectedDay = iso; renderCalendarScreen(); },
@@ -1594,8 +1696,14 @@ body{
         if(dayTx.some(t=>t.type==="expense")) colors.push(resolveVar("var(--expense)"));
         if(dayTx.some(t=>t.type==="saving")) colors.push(resolveVar("var(--saving)"));
         return colors;
-      });
+      }, true);
     renderDayDetail();
+    if(animateEntrance){
+      const card = document.querySelector("#screen-calendar .cal-screen-card");
+      card.classList.remove("cal-enter");
+      void card.offsetWidth;
+      card.classList.add("cal-enter");
+    }
   }
   document.getElementById("calPrev").addEventListener("click", ()=>{ calScreenDate.setMonth(calScreenDate.getMonth()-1); renderCalendarScreen(); });
   document.getElementById("calNext").addEventListener("click", ()=>{ calScreenDate.setMonth(calScreenDate.getMonth()+1); renderCalendarScreen(); });
@@ -2012,18 +2120,8 @@ body{
   });
 
   /* ---------------- SETTINGS ---------------- */
-  function applyTheme(){
-    document.getElementById("phone").setAttribute("data-theme", state.settings.theme==="terracota"? "" : state.settings.theme);
-  }
+  function applyTheme(){ /* paleta fixa, sem seleção de cor */ }
   function renderSettingsScreen(){
-    const sw = document.getElementById("themeSwatches");
-    sw.innerHTML = THEMES.map(t=>`<div class="swatch ${state.settings.theme===t.id?'selected':''}" style="background:${t.hex}" data-id="${t.id}" title="${t.label}"></div>`).join("");
-    sw.querySelectorAll(".swatch").forEach(el=>{
-      el.addEventListener("click", ()=>{
-        state.settings.theme = el.dataset.id;
-        saveState(); applyTheme(); renderSettingsScreen(); renderHome();
-      });
-    });
     document.getElementById("toggleNotif").classList.toggle("on", state.settings.notifications);
     document.getElementById("toggleHide").classList.toggle("on", state.settings.hideBalance);
 
