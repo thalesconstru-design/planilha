@@ -105,6 +105,7 @@ input,select{font-family:inherit;}
   padding:22px 20px;
   box-shadow:var(--shadow);
   position:relative; overflow:hidden;
+  touch-action:pan-y;
 }
 .balance-card::after{
   content:""; position:absolute; right:-40px; top:-60px; width:180px; height:180px; border-radius:50%;
@@ -238,8 +239,8 @@ input,select{font-family:inherit;}
 
 /* add menu que desliza */
 #addMenu{
-  position:fixed; left:0; right:0; bottom:92px; z-index:190; max-width:480px; margin:0 auto;
-  display:flex; justify-content:center; gap:12px; pointer-events:none;
+  position:fixed; left:0; right:0; bottom:132px; z-index:190; max-width:480px; margin:0 auto;
+  display:flex; justify-content:center; gap:10px; pointer-events:none; flex-wrap:wrap; padding:0 10px;
 }
 #addMenu .add-opt{
   pointer-events:none;
@@ -252,6 +253,8 @@ input,select{font-family:inherit;}
 #addMenu.show .add-opt:nth-child(1){transition-delay:.02s;}
 #addMenu.show .add-opt:nth-child(2){transition-delay:.07s;}
 #addMenu.show .add-opt:nth-child(3){transition-delay:.12s;}
+#addMenu.show .add-opt:nth-child(4){transition-delay:.16s;}
+#addMenu.show .add-opt:nth-child(5){transition-delay:.20s;}
 .add-opt .circ{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .add-opt .circ svg{width:18px;height:18px;}
 .add-opt.receita .circ{background:rgba(31,174,125,0.16); color:var(--accent);}
@@ -319,6 +322,22 @@ input,select{font-family:inherit;}
 .pote-add{
   border:1.5px dashed var(--border); border-radius:var(--radius-md); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:20px 0; color:var(--text-dim); font-weight:600; font-size:13px; cursor:pointer;
 }
+
+/* ---------- Contas a pagar/receber ---------- */
+.conta-item{
+  display:flex; align-items:center; gap:12px; padding:13px 4px; border-bottom:1px solid var(--border); cursor:pointer;
+}
+.conta-item:last-child{border-bottom:none;}
+.conta-item .ico{width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;}
+.conta-item.pagar .ico{background:rgba(255,107,94,0.14); color:var(--accent-2);}
+.conta-item.receber .ico{background:rgba(31,174,125,0.14); color:var(--accent);}
+.conta-item .info{flex:1; min-width:0;}
+.conta-item .info .t1{font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.conta-item .info .t2{font-size:12px; color:var(--text-dim); margin-top:2px;}
+.conta-item .amt{font-size:14.5px; font-weight:700; flex-shrink:0; text-align:right;}
+.conta-item.pagar .amt{color:var(--accent-2);}
+.conta-item.receber .amt{color:var(--accent);}
+.conta-item .amt .paid-tag{display:block; font-size:10px; font-weight:700; color:var(--accent); margin-top:2px;}
 
 /* ---------- Calendário iOS-like ---------- */
 .cal-header{display:flex; align-items:center; justify-content:space-between; margin:6px 0 14px;}
@@ -394,7 +413,7 @@ input,select{font-family:inherit;}
   font-size:13px; font-weight:600; color:var(--text); outline:none; width:120px;
 }
 
-/* saldo com navegação de mês */
+/* saldo com navegação de mês (swipeable) */
 .balance-top-row{display:flex; align-items:center; justify-content:center; gap:10px;}
 .cal-nav-btn.small{width:26px; height:26px;}
 .cal-nav-btn.small svg{width:13px; height:13px;}
@@ -403,11 +422,9 @@ input,select{font-family:inherit;}
   display:inline-block; margin-top:6px; font-size:11px; font-weight:700; color:var(--accent);
   background:rgba(31,174,125,0.14); padding:4px 10px; border-radius:20px; cursor:pointer;
 }
+.swipe-hint{text-align:center; font-size:10.5px; color:var(--text-faint); margin-top:2px;}
 
-/* add menu com 4 itens */
-#addMenu{gap:8px;}
-#addMenu .add-opt{width:74px; padding:10px 6px;}
-#addMenu.show .add-opt:nth-child(4){transition-delay:.16s;}
+.add-opt.contas .circ{background:rgba(58,176,255,0.16); color:#3AB0FF;}
 .add-opt .circ{width:34px; height:34px;}
 .add-opt.grafico .circ{background:rgba(58,176,255,0.16); color:#3AB0FF;}
 
@@ -415,13 +432,13 @@ input,select{font-family:inherit;}
 .graph-tabs{display:flex; margin-bottom:16px;}
 .graph-tabs button{flex:1;}
 .graph-panel{animation:screenIn .3s var(--ease);}
-.pie-wrap{position:relative; width:180px; height:180px; margin:0 auto;}
-.pie-circle{width:180px; height:180px; border-radius:50%; transition:background .4s;}
+.pie-wrap{position:relative; width:150px; height:150px; margin:0 auto;}
+.pie-circle{width:150px; height:150px; border-radius:50%; transition:background .4s;}
 .pie-center{
-  position:absolute; inset:26px; border-radius:50%; background:var(--card);
+  position:absolute; inset:22px; border-radius:50%; background:var(--card);
   display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:6px;
 }
-.pie-total{font-size:15px; font-weight:700;}
+.pie-total{font-size:14px; font-weight:700;}
 .pie-total-label{font-size:10px; color:var(--text-dim); margin-top:2px;}
 .legend-list{display:flex; flex-direction:column; gap:11px;}
 .legend-item{display:flex; align-items:center; gap:9px; font-size:13px;}
@@ -453,12 +470,12 @@ input,select{font-family:inherit;}
   <section class="screen active" id="screen-dashboard">
     <div class="topbar">
       <div>
-        <h2 id="greeting">Olá 👋</h2>
+        <h2>Início</h2>
         <div class="sub" id="todayLabel">—</div>
       </div>
     </div>
 
-    <div class="balance-card">
+    <div class="balance-card" id="balanceCard">
       <div class="balance-top-row">
         <button class="cal-nav-btn small" onclick="balShift(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
         <div class="balance-label" id="balMonthLabel">Saldo total</div>
@@ -466,6 +483,7 @@ input,select{font-family:inherit;}
       </div>
       <div style="text-align:center;"><span class="today-chip" id="balTodayChip" style="display:none;" onclick="balReset()">voltar para hoje</span></div>
       <div class="balance-value num" id="saldoTotal" style="text-align:center;">R$ 0,00</div>
+      <div class="swipe-hint">◂ deslize para ver outros meses ▸</div>
       <div class="balance-row">
         <div class="mini-stat receita" onclick="openTxModal('receita')">
           <div class="row">
@@ -518,6 +536,18 @@ input,select{font-family:inherit;}
     <div class="pote-grid" id="poteGrid"></div>
   </section>
 
+  <!-- ================= CONTAS A PAGAR/RECEBER (aberto via +) ================= -->
+  <section class="screen" id="screen-contas">
+    <div class="topbar"><div><h2>🏦 Contas</h2><div class="sub">a pagar e a receber</div></div></div>
+    <div class="filter-row" id="contaFilterRow">
+      <div class="filter-chip active" data-cf="todos">Todas</div>
+      <div class="filter-chip" data-cf="pagar">A pagar</div>
+      <div class="filter-chip" data-cf="receber">A receber</div>
+    </div>
+    <button class="btn-ghost" style="margin-bottom:14px;" onclick="openContaModal()">+ Nova conta</button>
+    <div class="card" id="contaList" style="padding:4px 14px;"></div>
+  </section>
+
   <!-- ================= CALENDÁRIO ================= -->
   <section class="screen" id="screen-calendario">
     <div class="topbar"><div><h2>Calendário</h2><div class="sub">seus lançamentos por dia</div></div></div>
@@ -543,19 +573,27 @@ input,select{font-family:inherit;}
     </div>
 
     <div class="graph-panel" id="panel-pizza">
-      <div class="type-toggle">
-        <button class="receita graph-type-btn active" data-gt="receita" onclick="setGraphType('receita')">Receitas</button>
-        <button class="despesa graph-type-btn" data-gt="despesa" onclick="setGraphType('despesa')">Despesas</button>
-      </div>
-      <div class="card" style="padding:24px 18px; display:flex; flex-direction:column; align-items:center;">
+      <div class="card" style="padding:22px 18px; margin-bottom:14px; display:flex; flex-direction:column; align-items:center;">
+        <div class="section-title" style="margin:0 0 14px; width:100%;"><h3>Receitas por categoria</h3></div>
         <div class="pie-wrap">
-          <div class="pie-circle" id="pieCircle"></div>
+          <div class="pie-circle" id="pieCircleReceita"></div>
           <div class="pie-center">
-            <div class="pie-total num" id="pieTotalVal">R$ 0,00</div>
-            <div class="pie-total-label" id="pieTotalLabel">Total</div>
+            <div class="pie-total num" id="pieTotalValReceita">R$ 0,00</div>
+            <div class="pie-total-label">receitas</div>
           </div>
         </div>
-        <div class="legend-list" id="pieLegend" style="width:100%; margin-top:20px;"></div>
+        <div class="legend-list" id="pieLegendReceita" style="width:100%; margin-top:18px;"></div>
+      </div>
+      <div class="card" style="padding:22px 18px; display:flex; flex-direction:column; align-items:center;">
+        <div class="section-title" style="margin:0 0 14px; width:100%;"><h3>Despesas por categoria</h3></div>
+        <div class="pie-wrap">
+          <div class="pie-circle" id="pieCircleDespesa"></div>
+          <div class="pie-center">
+            <div class="pie-total num" id="pieTotalValDespesa">R$ 0,00</div>
+            <div class="pie-total-label">despesas</div>
+          </div>
+        </div>
+        <div class="legend-list" id="pieLegendDespesa" style="width:100%; margin-top:18px;"></div>
       </div>
     </div>
 
@@ -647,6 +685,10 @@ input,select{font-family:inherit;}
     <div class="circ" style="font-size:18px;">🐷</div>
     <span>Caixinha</span>
   </div>
+  <div class="add-opt contas" onclick="goTo('contas'); closeAddMenu();">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M3 11h18M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg></div>
+    <span>Contas</span>
+  </div>
   <div class="add-opt grafico" onclick="goTo('graficos'); closeAddMenu();">
     <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 12A9 9 0 0 0 12 3v9z"/></svg></div>
     <span>Gráficos</span>
@@ -725,6 +767,27 @@ input,select{font-family:inherit;}
   <button class="btn-danger" id="moveDeleteBtn" style="display:none;" onclick="deleteMove()">Excluir movimentação</button>
 </div>
 
+<!-- ====== sheet: conta a pagar/receber ====== -->
+<div class="sheet-backdrop" id="contaBackdrop" onclick="closeSheet('conta')"></div>
+<div class="sheet" id="contaSheet">
+  <div class="sheet-handle"></div>
+  <h3 id="contaTitle">Nova conta</h3>
+  <div class="type-toggle">
+    <button id="contaTypePagar" class="despesa" onclick="setContaType('pagar')">A pagar</button>
+    <button id="contaTypeReceber" class="receita" onclick="setContaType('receber')">A receber</button>
+  </div>
+  <div class="field"><label>Descrição</label><input type="text" id="contaNome" placeholder="Ex: Cartão Nubank, Cliente X..."></div>
+  <div class="field"><label>Banco</label><input type="text" id="contaBanco" placeholder="Ex: Nubank, Itaú..."></div>
+  <div class="field"><label>Valor</label><input type="text" inputmode="decimal" id="contaValor" placeholder="0,00"></div>
+  <div class="field"><label>Vencimento</label><input type="date" id="contaData"></div>
+  <div class="settings-row" style="padding:6px 0 14px;">
+    <div class="lbl">Já paga / recebida</div>
+    <div class="switch" id="contaPaidSwitch" onclick="toggleContaPaid()"><div class="knob"></div></div>
+  </div>
+  <button class="btn-primary" id="contaSaveBtn" onclick="saveConta()">Salvar conta</button>
+  <button class="btn-danger" id="contaDeleteBtn" style="display:none;" onclick="deleteConta()">Excluir conta</button>
+</div>
+
 <!-- ====== sheet: dia do calendário ====== -->
 <div class="sheet-backdrop" id="dayBackdrop" onclick="closeSheet('day')"></div>
 <div class="sheet" id="daySheet">
@@ -746,6 +809,7 @@ input,select{font-family:inherit;}
    ESTADO & PERSISTÊNCIA
 ============================================================ */
 const STORAGE_KEY = 'planilha_thales_v1';
+const UI_STORAGE_KEY = 'planilha_thales_ui_v1';
 const todayISO = () => new Date().toISOString().slice(0,10);
 
 const ICONS = {
@@ -776,6 +840,7 @@ function defaultState(){
     ],
     transactions:[], // {id,type:'receita'|'despesa'|'deposito'|'retirada', amount, desc, date, account, category, poteId}
     potes:[], // {id, name, emoji, meta}
+    bills:[], // {id, name, bank, amount, type:'pagar'|'receber', dueDate, paid}
   };
 }
 let state = load();
@@ -790,6 +855,40 @@ function load(){
 function save(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
 }
+
+/* --- estado de navegação/UI persistido automaticamente --- */
+function defaultUiState(){
+  return {
+    screen:'dashboard',
+    balDate: todayISO().slice(0,7)+'-01',
+    calDate: todayISO().slice(0,7)+'-01',
+    selectedDay: null,
+    graphTab: 'pizza',
+    filter: 'todos',
+    contaFilter: 'todos',
+  };
+}
+let uiState = loadUi();
+function loadUi(){
+  try{
+    const raw = localStorage.getItem(UI_STORAGE_KEY);
+    if(!raw) return defaultUiState();
+    return Object.assign(defaultUiState(), JSON.parse(raw));
+  }catch(e){ return defaultUiState(); }
+}
+function saveUi(){
+  try{
+    uiState.screen = currentScreen;
+    uiState.balDate = balSelDate.getFullYear()+'-'+String(balSelDate.getMonth()+1).padStart(2,'0')+'-01';
+    uiState.calDate = calDate.getFullYear()+'-'+String(calDate.getMonth()+1).padStart(2,'0')+'-01';
+    uiState.selectedDay = selectedDay;
+    uiState.filter = currentFilter;
+    uiState.contaFilter = currentContaFilter;
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(uiState));
+  }catch(e){}
+}
+window.addEventListener('pagehide', saveUi);
+window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') saveUi(); });
 
 function fmt(v){
   const n = Number(v)||0;
@@ -909,10 +1008,12 @@ function goTo(name){
   else document.querySelector('.nav-btn[data-nav="dashboard"]').classList.remove('active');
   if(name==='lancamentos') renderFullList();
   if(name==='caixinhas') renderPotes();
+  if(name==='contas') renderContas();
   if(name==='calendario') renderCalendar();
   if(name==='config') renderConfig();
   if(name==='graficos') renderGraficos();
   window.scrollTo(0,0);
+  saveUi();
 }
 
 /* ============================================================
@@ -1279,22 +1380,126 @@ function deleteMove(){
 }
 
 /* ============================================================
+   CONTAS A PAGAR / RECEBER
+============================================================ */
+let currentContaFilter = 'todos';
+let contaState = { type:'pagar', editId:null, paid:false };
+document.addEventListener('DOMContentLoaded', ()=>{
+  const row = document.getElementById('contaFilterRow');
+  if(row) row.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.filter-chip');
+    if(!chip) return;
+    row.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentContaFilter = chip.dataset.cf;
+    saveUi();
+    renderContas();
+  });
+});
+function openContaModal(editId=null){
+  contaState.editId = editId;
+  document.getElementById('contaData').value = todayISO();
+  if(editId){
+    const c = state.bills.find(x=>x.id===editId);
+    document.getElementById('contaTitle').textContent = 'Editar conta';
+    document.getElementById('contaNome').value = c.name;
+    document.getElementById('contaBanco').value = c.bank||'';
+    document.getElementById('contaValor').value = formatCurrencyInput(c.amount);
+    document.getElementById('contaData').value = c.dueDate;
+    setContaType(c.type);
+    contaState.paid = !!c.paid;
+    document.getElementById('contaPaidSwitch').classList.toggle('on', contaState.paid);
+    document.getElementById('contaDeleteBtn').style.display = 'block';
+  } else {
+    document.getElementById('contaTitle').textContent = 'Nova conta';
+    document.getElementById('contaNome').value = '';
+    document.getElementById('contaBanco').value = '';
+    document.getElementById('contaValor').value = '';
+    setContaType('pagar');
+    contaState.paid = false;
+    document.getElementById('contaPaidSwitch').classList.remove('on');
+    document.getElementById('contaDeleteBtn').style.display = 'none';
+  }
+  openSheet('conta');
+}
+function setContaType(type){
+  contaState.type = type;
+  document.getElementById('contaTypePagar').classList.toggle('active', type==='pagar');
+  document.getElementById('contaTypeReceber').classList.toggle('active', type==='receber');
+}
+function toggleContaPaid(){
+  contaState.paid = !contaState.paid;
+  document.getElementById('contaPaidSwitch').classList.toggle('on', contaState.paid);
+}
+function saveConta(){
+  const name = document.getElementById('contaNome').value.trim();
+  if(!name){ toast('Dê uma descrição para a conta'); return; }
+  const bank = document.getElementById('contaBanco').value.trim();
+  const amount = parseCurrencyInput(document.getElementById('contaValor').value);
+  if(!amount || amount<=0){ toast('Informe um valor válido'); return; }
+  const dueDate = document.getElementById('contaData').value || todayISO();
+
+  if(contaState.editId){
+    const c = state.bills.find(x=>x.id===contaState.editId);
+    Object.assign(c, {name, bank, amount, dueDate, type:contaState.type, paid:contaState.paid});
+  } else {
+    state.bills.push({id:uid(), name, bank, amount, dueDate, type:contaState.type, paid:contaState.paid});
+  }
+  save();
+  closeSheet('conta');
+  showCheck();
+  toast(contaState.editId ? 'Conta atualizada' : 'Conta salva');
+  renderContas();
+}
+function deleteConta(){
+  state.bills = state.bills.filter(c=>c.id!==contaState.editId);
+  save();
+  closeSheet('conta');
+  toast('Conta excluída');
+  renderContas();
+}
+function renderContas(){
+  let list = [...state.bills];
+  if(currentContaFilter==='pagar') list = list.filter(c=>c.type==='pagar');
+  else if(currentContaFilter==='receber') list = list.filter(c=>c.type==='receber');
+  list.sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  const el = document.getElementById('contaList');
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M3 11h18M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+      <div>Nenhuma conta cadastrada.<br>Toque em "+ Nova conta" para começar.</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(c=>{
+    const sign = c.type==='pagar' ? '−' : '+';
+    const dataFmt = new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR');
+    return `<div class="conta-item ${c.type}" onclick="openContaModal('${c.id}')">
+      <div class="ico">${c.type==='pagar'?'💳':'💰'}</div>
+      <div class="info">
+        <div class="t1">${c.name}</div>
+        <div class="t2">${c.bank?c.bank+' · ':''}vence ${dataFmt}</div>
+      </div>
+      <div class="amt num">${sign} ${fmt(c.amount)}${c.paid?`<span class="paid-tag">${c.type==='pagar'?'paga':'recebida'}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
    RENDER: DASHBOARD
 ============================================================ */
 function renderGreeting(){
-  const h = new Date().getHours();
-  const g = h<12?'Bom dia':(h<18?'Boa tarde':'Boa noite');
-  document.getElementById('greeting').textContent = g+' 👋';
   document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long', day:'numeric', month:'long'});
 }
 let balSelDate = new Date();
 function balShift(dir){
   balSelDate = new Date(balSelDate.getFullYear(), balSelDate.getMonth()+dir, 1);
   renderBalanceCard();
+  saveUi();
 }
 function balReset(){
   balSelDate = new Date();
   renderBalanceCard();
+  saveUi();
 }
 function renderBalanceCard(){
   const y = balSelDate.getFullYear(), m = balSelDate.getMonth();
@@ -1310,6 +1515,29 @@ function renderBalanceCard(){
   document.getElementById('totalReceitas').textContent = fmt(totalPorTipo('receita', m, y));
   document.getElementById('totalDespesas').textContent = fmt(totalPorTipo('despesa', m, y));
 }
+/* swipe (touch) para navegar entre meses no card de saldo */
+(function setupBalanceSwipe(){
+  const card = document.getElementById('balanceCard');
+  if(!card) return;
+  let startX=0, startY=0, tracking=false;
+  card.addEventListener('touchstart', (e)=>{
+    if(!e.touches || !e.touches.length) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, {passive:true});
+  card.addEventListener('touchend', (e)=>{
+    if(!tracking) return;
+    tracking = false;
+    const touch = e.changedTouches && e.changedTouches[0];
+    if(!touch) return;
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)*1.5){
+      if(dx < 0) balShift(1); else balShift(-1);
+    }
+  }, {passive:true});
+})();
 function renderDashboard(){
   renderBalanceCard();
   renderPredict(saldoTotal());
@@ -1438,9 +1666,10 @@ let currentFilter = 'todos';
 document.getElementById('filterRow').addEventListener('click', (e)=>{
   const chip = e.target.closest('.filter-chip');
   if(!chip) return;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('#filterRow .filter-chip').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active');
   currentFilter = chip.dataset.f;
+  saveUi();
   renderFullList();
 });
 function renderFullList(){
@@ -1463,6 +1692,7 @@ let selectedDay = null;
 function calShift(dir){
   calDate = new Date(calDate.getFullYear(), calDate.getMonth()+dir, 1);
   renderCalendar();
+  saveUi();
 }
 function renderCalendar(){
   const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -1507,6 +1737,7 @@ function renderCalendar(){
 function selectDay(dateStr){
   selectedDay = dateStr;
   renderCalendar();
+  saveUi();
 }
 function renderDayDetail(dateStr){
   const label = document.getElementById('dayDetailLabel');
@@ -1545,23 +1776,20 @@ function buildPieGradient(entries){
   }).join(', ');
   return `conic-gradient(${stops})`;
 }
-let graphType = 'receita';
-function setGraphType(t){
-  graphType = t;
-  document.querySelectorAll('.graph-type-btn').forEach(b=>b.classList.toggle('active', b.dataset.gt===t));
-  renderPie(t);
-}
-function renderPie(type){
+function renderPieBlock(type, circleId, totalId, legendId, labelText){
   const data = categoryTotals(type).map(d=>({...d, color:colorForCategory(d.name)}));
   const total = data.reduce((a,d)=>a+d.value,0);
-  document.getElementById('pieCircle').style.background = data.length ? buildPieGradient(data) : 'var(--border)';
-  document.getElementById('pieTotalVal').textContent = fmt(total);
-  document.getElementById('pieTotalLabel').textContent = type==='receita' ? 'total em receitas' : 'total em despesas';
-  const legend = document.getElementById('pieLegend');
+  document.getElementById(circleId).style.background = data.length ? buildPieGradient(data) : 'var(--border)';
+  document.getElementById(totalId).textContent = fmt(total);
+  const legend = document.getElementById(legendId);
   legend.innerHTML = data.length ? data.map(d=>{
     const pct = total ? Math.round(d.value/total*100) : 0;
     return `<div class="legend-item"><span class="dot" style="background:${d.color}"></span><span class="lname">${d.name}</span><span class="lval num">${fmt(d.value)} · ${pct}%</span></div>`;
-  }).join('') : `<div class="empty-state"><div>Sem lançamentos ainda.</div></div>`;
+  }).join('') : `<div class="empty-state"><div>Sem ${labelText} ainda.</div></div>`;
+}
+function renderPieBoth(){
+  renderPieBlock('receita','pieCircleReceita','pieTotalValReceita','pieLegendReceita','receitas');
+  renderPieBlock('despesa','pieCircleDespesa','pieTotalValDespesa','pieLegendDespesa','despesas');
 }
 function last6Months(){
   const now = new Date(); const arr=[];
@@ -1606,10 +1834,12 @@ function showGraphTab(tab){
     document.getElementById('panel-'+t).style.display = (t===tab) ? '' : 'none';
   });
   document.querySelectorAll('.graph-tab').forEach(b=>b.classList.toggle('active', b.dataset.gtab===tab));
+  uiState.graphTab = tab;
+  saveUi();
 }
 function renderGraficos(){
-  showGraphTab('pizza');
-  renderPie(graphType);
+  showGraphTab(uiState.graphTab || 'pizza');
+  renderPieBoth();
   renderLineChart();
   renderBarChart();
 }
@@ -1662,6 +1892,7 @@ function refreshAll(){
   renderDashboard();
   if(currentScreen==='lancamentos') renderFullList();
   if(currentScreen==='caixinhas') renderPotes();
+  if(currentScreen==='contas') renderContas();
   if(currentScreen==='calendario') renderCalendar();
   if(currentScreen==='config') renderConfig();
   if(currentScreen==='graficos') renderGraficos();
@@ -1673,11 +1904,32 @@ function refreshAll(){
 function init(){
   setTheme(state.theme || 'dark');
   renderGreeting();
+
+  /* restaura navegação/estado salvo automaticamente */
+  currentFilter = uiState.filter || 'todos';
+  currentContaFilter = uiState.contaFilter || 'todos';
+  document.querySelectorAll('#filterRow .filter-chip').forEach(c=>c.classList.toggle('active', c.dataset.f===currentFilter));
+  const contaRow = document.getElementById('contaFilterRow');
+  if(contaRow) contaRow.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active', c.dataset.cf===currentContaFilter));
+
+  if(uiState.balDate){
+    const [by,bm] = uiState.balDate.split('-').map(Number);
+    balSelDate = new Date(by, bm-1, 1);
+  }
+  if(uiState.calDate){
+    const [cy,cm] = uiState.calDate.split('-').map(Number);
+    calDate = new Date(cy, cm-1, 1);
+  }
+  selectedDay = uiState.selectedDay || null;
+
   renderDashboard();
   renderConfig();
   maskCurrencyInput(document.getElementById('txValor'));
   maskCurrencyInput(document.getElementById('moveValor'));
   maskCurrencyInput(document.getElementById('poteMeta'));
+  maskCurrencyInput(document.getElementById('contaValor'));
+
+  goTo(uiState.screen || 'dashboard');
 
   setTimeout(()=>{
     document.getElementById('splash').classList.add('hide');
