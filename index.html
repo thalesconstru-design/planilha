@@ -406,16 +406,27 @@ input,select{font-family:inherit;}
   font-size:13px; font-weight:600; color:var(--text); outline:none; width:120px;
 }
 
-/* saldo com navegação de mês (swipeable) */
-.balance-top-row{display:flex; align-items:center; justify-content:center; gap:10px;}
-.cal-nav-btn.small{width:26px; height:26px;}
-.cal-nav-btn.small svg{width:13px; height:13px;}
+/* carrossel de meses (snap scroll) acima do saldo total */
+.month-carousel-wrap{ margin:2px 0 12px; }
+.month-carousel{
+  display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory;
+  padding:4px 44%; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;
+}
+.month-carousel::-webkit-scrollbar{display:none;}
+.month-pill{
+  scroll-snap-align:center; flex-shrink:0; min-width:64px; text-align:center; padding:9px 8px;
+  border-radius:14px; background:var(--card); border:1px solid var(--border); font-size:12.5px; font-weight:700;
+  color:var(--text-dim); text-transform:capitalize; transition:transform .25s var(--ease), background .25s, color .25s, box-shadow .25s;
+  cursor:pointer;
+}
+.month-pill .y{display:block; font-size:9.5px; font-weight:600; color:var(--text-faint); margin-top:2px;}
+.month-pill.active{background:linear-gradient(150deg,var(--accent),#12805C); color:#fff; transform:scale(1.1); box-shadow:0 10px 22px rgba(34,196,142,0.3);}
+.month-pill.active .y{color:rgba(255,255,255,0.85);}
 .balance-label{color:var(--text-dim); font-size:13px; font-weight:600; text-align:center; text-transform:capitalize;}
 .today-chip{
   display:inline-block; margin-top:6px; font-size:11px; font-weight:700; color:var(--accent);
   background:rgba(34,196,142,0.14); padding:4px 10px; border-radius:20px; cursor:pointer;
 }
-.swipe-hint{text-align:center; font-size:10.5px; color:var(--text-faint); margin-top:2px;}
 
 .add-opt.contas .circ{background:rgba(58,176,255,0.16); color:#3AB0FF;}
 .add-opt .circ{width:34px; height:34px;}
@@ -468,24 +479,23 @@ input,select{font-family:inherit;}
       </div>
     </div>
 
+    <div class="month-carousel-wrap">
+      <div class="month-carousel" id="monthCarousel"></div>
+    </div>
+
     <div class="balance-card" id="balanceCard">
-      <div class="balance-top-row">
-        <button class="cal-nav-btn small" onclick="balShift(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-        <div class="balance-label" id="balMonthLabel">Saldo total</div>
-        <button class="cal-nav-btn small" onclick="balShift(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
-      </div>
+      <div class="balance-label" id="balMonthLabel">Saldo total</div>
       <div style="text-align:center;"><span class="today-chip" id="balTodayChip" style="display:none;" onclick="balReset()">voltar para hoje</span></div>
       <div class="balance-value num" id="saldoTotal" style="text-align:center;">R$ 0,00</div>
-      <div class="swipe-hint">◂ deslize para ver outros meses ▸</div>
       <div class="balance-row">
-        <div class="mini-stat receita" onclick="openTxModal('receita')">
+        <div class="mini-stat receita" id="miniStatReceita" onclick="openTxModal('receita')">
           <div class="row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
             Receitas
           </div>
           <div class="amt num" id="totalReceitas">R$ 0,00</div>
         </div>
-        <div class="mini-stat despesa" onclick="openTxModal('despesa')">
+        <div class="mini-stat despesa" id="miniStatDespesa" onclick="openTxModal('despesa')">
           <div class="row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
             Despesas
@@ -493,6 +503,7 @@ input,select{font-family:inherit;}
           <div class="amt num" id="totalDespesas">R$ 0,00</div>
         </div>
       </div>
+      <div style="text-align:center; margin-top:8px; font-size:10.5px; color:var(--text-faint);">toque e segure em receitas/despesas para ver e somar itens</div>
     </div>
 
     <div class="section-title"><h3>Previsibilidade</h3></div>
@@ -501,7 +512,13 @@ input,select{font-family:inherit;}
         <div class="predict-daily num"><small>Você pode gastar por dia</small><span id="gastoDiario">R$ 0,00</span></div>
         <div class="predict-pill ok" id="predictPill">no controle</div>
       </div>
+      <div style="font-size:12px; color:var(--text-dim); margin-top:6px;" id="predictExplain">Faltam N dias no mês.</div>
       <div class="chart-wrap" id="chartWrap"></div>
+      <div style="display:flex; gap:14px; margin-top:10px; justify-content:center;">
+        <span class="legend-caption"><span class="dot" style="background:var(--accent-3)"></span> Histórico</span>
+        <span class="legend-caption"><span class="dot" style="background:rgba(140,124,250,0.35); box-shadow:0 0 0 1px rgba(140,124,250,0.5) inset;"></span> Projeção</span>
+      </div>
+      <div style="font-size:11.5px; color:var(--text-faint); margin-top:8px; text-align:center;">Projeção baseada na média de receitas menos despesas dos últimos 3 meses.</div>
     </div>
 
     <div class="section-title"><h3>Ano em resumo</h3><span class="link" id="yearLabel">2026</span></div>
@@ -609,15 +626,17 @@ input,select{font-family:inherit;}
     <div class="topbar"><div><h2>Configurações</h2></div></div>
 
     <div class="settings-group">
-      <h4>Categorias</h4>
-      <div class="card" style="padding:8px 14px;" id="catManageList"></div>
-      <button class="btn-ghost" onclick="promptNewCategory()">+ Nova categoria</button>
-    </div>
-
-    <div class="settings-group">
-      <h4>Bancos / Contas</h4>
-      <div class="card" style="padding:8px 14px;" id="accManageList"></div>
-      <button class="btn-ghost" onclick="promptNewAccount()">+ Novo banco/conta</button>
+      <h4>Preferências</h4>
+      <div class="card" style="padding:2px 14px;">
+        <div class="settings-row" style="cursor:pointer;" onclick="openCatManage()">
+          <div class="lbl">🏷️ Categorias</div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div class="settings-row" style="cursor:pointer;" onclick="goTo('contas')">
+          <div class="lbl">🏦 Bancos / Contas</div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
     </div>
 
     <div class="settings-group">
@@ -700,7 +719,17 @@ input,select{font-family:inherit;}
   <div class="field"><label>Valor</label><input type="text" inputmode="decimal" id="txValor" placeholder="0,00"></div>
   <div class="field"><label>Descrição (opcional)</label><input type="text" id="txDesc" placeholder="Ex: mercado, salário..."></div>
   <div class="field"><label>Data</label><input type="date" id="txData"></div>
-  <div class="field"><label>Conta</label><select id="txConta"></select></div>
+  <div class="field">
+    <label id="txContaLabel">Conta (banco que recebe o valor)</label>
+    <select id="txConta" onchange="onTxBankSelectChange()"></select>
+    <div id="txBankNewWrap" style="display:none; margin-top:10px;">
+      <input type="text" id="txBankNewInput" class="chip-input" style="width:100%;" placeholder="Ex: Inter, Nubank, Banco do Brasil...">
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button type="button" class="btn-ghost" style="margin-top:0;" onclick="cancelNewTxBank()">Cancelar</button>
+        <button type="button" class="btn-primary" style="margin-top:0;" onclick="confirmNewTxBank()">Adicionar</button>
+      </div>
+    </div>
+  </div>
   <div class="field">
     <label>Categoria</label>
     <div style="display:flex; gap:8px; align-items:center;">
@@ -762,6 +791,25 @@ input,select{font-family:inherit;}
   <button class="btn-danger" id="contaDeleteBtn" style="display:none;" onclick="deleteConta()">Excluir banco</button>
 </div>
 
+<!-- ====== sheet: receitas/despesas do mês (toque e segure) ====== -->
+<div class="sheet-backdrop" id="statBackdrop" onclick="closeSheet('stat')"></div>
+<div class="sheet" id="statSheet">
+  <div class="sheet-handle"></div>
+  <h3 id="statTitle">Receitas</h3>
+  <div class="sub" id="statCount" style="text-align:center; color:var(--text-dim); font-size:13px; margin:-8px 0 12px;">0 lançamentos</div>
+  <div class="card" id="statSumBar" style="padding:12px 16px; margin-bottom:14px; text-align:center; font-weight:700;">Selecionado: R$ 0,00 (0 itens)</div>
+  <div id="statList"></div>
+</div>
+
+<!-- ====== sheet: gerenciar categorias ====== -->
+<div class="sheet-backdrop" id="catManageBackdrop" onclick="closeSheet('catManage')"></div>
+<div class="sheet" id="catManageSheet">
+  <div class="sheet-handle"></div>
+  <h3>Categorias</h3>
+  <div class="card" style="padding:8px 14px; margin-bottom:14px;" id="catManageListSheet"></div>
+  <button class="btn-ghost" style="margin-top:0;" onclick="promptNewCategory()">+ Nova categoria</button>
+</div>
+
 <!-- ====== sheet: dia do calendário ====== -->
 <div class="sheet-backdrop" id="dayBackdrop" onclick="closeSheet('day')"></div>
 <div class="sheet" id="daySheet">
@@ -801,7 +849,6 @@ function iconFor(cat){ return ICONS[cat.iconKey] || ICONS.outros; }
 function defaultState(){
   return {
     theme:'dark',
-    accounts:['Conta Corrente','Carteira','Poupança'],
     categories:[
       {name:'Casa', iconKey:'casa'},
       {name:'Lazer', iconKey:'lazer'},
@@ -812,9 +859,9 @@ function defaultState(){
       {name:'Salário', iconKey:'salario'},
       {name:'Outros', iconKey:'outros'},
     ],
-    transactions:[], // {id,type:'receita'|'despesa'|'deposito'|'retirada', amount, desc, date, account, category, poteId}
+    transactions:[], // {id,type:'receita'|'despesa'|'deposito'|'retirada'|'saldo_inicial', amount, desc, date, bankId, category, poteId}
     potes:[], // {id, name, emoji, meta}
-    bankBalances:[], // {id, name, value} - bancos que o usuário utiliza e seus saldos
+    bankBalances:[], // {id, name} - bancos que o usuário utiliza (o saldo é calculado a partir dos lançamentos)
   };
 }
 let state = load();
@@ -823,8 +870,35 @@ function load(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return defaultState();
     const parsed = JSON.parse(raw);
-    return Object.assign(defaultState(), parsed);
+    const st = Object.assign(defaultState(), parsed);
+    migrateLegacyData(st);
+    return st;
   }catch(e){ return defaultState(); }
+}
+/* migra dados de versões antigas: contas soltas (strings) e bancos com "value" fixo
+   viram bancos + lançamento de saldo inicial, para que o valor entre no saldo total */
+function migrateLegacyData(st){
+  if(!Array.isArray(st.bankBalances)) st.bankBalances = [];
+  st.bankBalances.forEach(b=>{
+    if(typeof b.value === 'number'){
+      if(b.value !== 0){
+        st.transactions.push({id:uid(), type:'saldo_inicial', amount:b.value, date:todayISO(), bankId:b.id, desc:'Saldo inicial'});
+      }
+      delete b.value;
+    }
+  });
+  if(Array.isArray(st.accounts) && st.accounts.length){
+    const nameToId = {};
+    st.accounts.forEach(name=>{
+      let bank = st.bankBalances.find(b=>b.name===name);
+      if(!bank){ bank = {id:uid(), name}; st.bankBalances.push(bank); }
+      nameToId[name] = bank.id;
+    });
+    st.transactions.forEach(t=>{
+      if(t.account && !t.bankId && nameToId[t.account]){ t.bankId = nameToId[t.account]; }
+    });
+    delete st.accounts;
+  }
 }
 function save(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
@@ -901,6 +975,7 @@ function saldoTotal(){
     if(t.type==='despesa') return acc-t.amount;
     if(t.type==='deposito') return acc-t.amount;
     if(t.type==='retirada') return acc+t.amount;
+    if(t.type==='saldo_inicial') return acc+t.amount;
     return acc;
   },0);
 }
@@ -919,12 +994,21 @@ function poteSaldo(poteId){
     return acc;
   },0);
 }
+function bancoSaldo(bankId){
+  return state.transactions.filter(t=>t.bankId===bankId).reduce((acc,t)=>{
+    if(t.type==='receita') return acc+t.amount;
+    if(t.type==='despesa') return acc-t.amount;
+    if(t.type==='saldo_inicial') return acc+t.amount;
+    return acc;
+  },0);
+}
 function sumLedger(list){
   return list.reduce((acc,t)=>{
     if(t.type==='receita') return acc+t.amount;
     if(t.type==='despesa') return acc-t.amount;
     if(t.type==='deposito') return acc-t.amount;
     if(t.type==='retirada') return acc+t.amount;
+    if(t.type==='saldo_inicial') return acc+t.amount;
     return acc;
   },0);
 }
@@ -1039,7 +1123,7 @@ let txState = { type:'receita', editId:null };
 function openTxModal(type, editId=null){
   txState.type = type; txState.editId = editId;
   document.getElementById('txData').value = todayISO();
-  renderAccountSelect();
+  cancelNewTxBank();
   cancelNewTxCat();
   renderCatSelect();
   setTxType(type);
@@ -1050,7 +1134,8 @@ function openTxModal(type, editId=null){
     document.getElementById('txValor').value = formatCurrencyInput(t.amount);
     document.getElementById('txDesc').value = t.desc||'';
     document.getElementById('txData').value = t.date;
-    document.getElementById('txConta').value = t.account;
+    selectedBankId = t.bankId || null;
+    renderTxBankSelect();
     selectedCat = t.category;
     renderCatSelect();
     document.getElementById('txDeleteBtn').style.display = 'block';
@@ -1058,6 +1143,8 @@ function openTxModal(type, editId=null){
     document.getElementById('txTitle').textContent = type==='receita' ? 'Nova receita' : 'Nova despesa';
     document.getElementById('txValor').value = '';
     document.getElementById('txDesc').value = '';
+    selectedBankId = state.bankBalances[0] ? state.bankBalances[0].id : null;
+    renderTxBankSelect();
     document.getElementById('txDeleteBtn').style.display = 'none';
   }
   openSheet('tx');
@@ -1068,10 +1155,51 @@ function setTxType(type){
   document.getElementById('txTypeDespesa').classList.toggle('active', type==='despesa');
   document.getElementById('txSaveBtn').classList.toggle('despesa', type==='despesa');
   document.getElementById('txTitle').textContent = (txState.editId?'Editar ':'Nova ') + (type==='receita'?'receita':(txState.editId?'despesa':'despesa'));
+  document.getElementById('txContaLabel').textContent = type==='receita' ? 'Conta (banco que recebe o valor)' : 'Conta (banco de onde o valor sai)';
 }
-function renderAccountSelect(){
+/* ---------- banco: dropdown com criação inline (mesma lista da tela Contas) ---------- */
+let selectedBankId = null;
+function renderTxBankSelect(){
   const sel = document.getElementById('txConta');
-  sel.innerHTML = state.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
+  if(!state.bankBalances.length){
+    sel.innerHTML = `<option value="">Nenhum banco cadastrado</option><option value="__new__">+ Novo banco...</option>`;
+    selectedBankId = null;
+    return;
+  }
+  if(!selectedBankId || !state.bankBalances.some(b=>b.id===selectedBankId)){
+    selectedBankId = state.bankBalances[0].id;
+  }
+  sel.innerHTML = state.bankBalances.map(b=>
+    `<option value="${b.id}" ${b.id===selectedBankId?'selected':''}>${b.name}</option>`
+  ).join('') + `<option value="__new__">+ Novo banco...</option>`;
+}
+function onTxBankSelectChange(){
+  const sel = document.getElementById('txConta');
+  if(sel.value==='__new__'){
+    document.getElementById('txBankNewWrap').style.display = 'block';
+    setTimeout(()=>{ const inp=document.getElementById('txBankNewInput'); if(inp){ inp.value=''; inp.focus(); } }, 20);
+  } else {
+    selectedBankId = sel.value || null;
+    cancelNewTxBank();
+  }
+}
+function cancelNewTxBank(){
+  const wrap = document.getElementById('txBankNewWrap');
+  if(wrap) wrap.style.display = 'none';
+  renderTxBankSelect();
+}
+function confirmNewTxBank(){
+  const inp = document.getElementById('txBankNewInput');
+  const name = (inp?.value||'').trim();
+  if(!name){ toast('Digite o nome do banco'); return; }
+  let bank = state.bankBalances.find(b=>b.name.toLowerCase()===name.toLowerCase());
+  if(!bank){
+    bank = {id:uid(), name};
+    state.bankBalances.push(bank);
+    save();
+  }
+  selectedBankId = bank.id;
+  cancelNewTxBank();
 }
 /* ---------- categoria: dropdown com criação e renomeação inline ---------- */
 let selectedCat = null;
@@ -1133,14 +1261,15 @@ function saveTx(){
   if(!amount || amount<=0){ toast('Informe um valor válido'); return; }
   const desc = document.getElementById('txDesc').value.trim();
   const date = document.getElementById('txData').value || todayISO();
-  const account = document.getElementById('txConta').value;
+  const bankId = selectedBankId || null;
   const category = selectedCat || 'Outros';
 
   if(txState.editId){
     const t = state.transactions.find(x=>x.id===txState.editId);
-    Object.assign(t, {amount, desc, date, account, category, type:txState.type});
+    Object.assign(t, {amount, desc, date, bankId, category, type:txState.type});
+    delete t.account;
   } else {
-    state.transactions.push({id:uid(), type:txState.type, amount, desc, date, account, category});
+    state.transactions.push({id:uid(), type:txState.type, amount, desc, date, bankId, category});
   }
   save();
   closeSheet('tx');
@@ -1164,28 +1293,7 @@ function promptNewCategory(fromChip=false){
   state.categories.push({name:name.trim(), iconKey:'outros'});
   save();
   if(fromChip){ selectedCat = name.trim(); renderCatSelect(); }
-  renderConfig();
-}
-function promptNewAccount(){
-  const name = prompt('Nome do novo banco/conta (ex: Nubank, Inter, Banco do Brasil, Dinheiro...):');
-  if(!name) return;
-  if(state.accounts.includes(name.trim())){ toast('Já existe um banco/conta com esse nome'); return; }
-  state.accounts.push(name.trim());
-  save();
-  renderConfig();
-}
-function renameAccount(oldName){
-  const novoNome = prompt('Novo nome para o banco/conta:', oldName);
-  if(!novoNome || !novoNome.trim() || novoNome.trim()===oldName) return null;
-  const nome = novoNome.trim();
-  if(state.accounts.some(a=>a.toLowerCase()===nome.toLowerCase() && a!==oldName)){ toast('Já existe um banco/conta com esse nome'); return null; }
-  const idx = state.accounts.indexOf(oldName);
-  if(idx>=0) state.accounts[idx] = nome;
-  state.transactions.forEach(t=>{ if(t.account===oldName) t.account = nome; });
-  save();
-  renderConfig();
-  toast('Banco/conta renomeado');
-  return nome;
+  renderCatManageSheet();
 }
 function renameCategory(oldName){
   const novoNome = prompt('Novo nome para a categoria:', oldName);
@@ -1196,18 +1304,13 @@ function renameCategory(oldName){
   if(cat) cat.name = nome;
   state.transactions.forEach(t=>{ if(t.category===oldName) t.category = nome; });
   save();
-  renderConfig();
+  renderCatManageSheet();
   toast('Categoria renomeada');
 }
 function removeCategory(name){
   if(!confirm('Remover a categoria "'+name+'"?')) return;
   state.categories = state.categories.filter(c=>c.name!==name);
-  save(); renderConfig();
-}
-function removeAccount(name){
-  if(!confirm('Remover a conta "'+name+'"?')) return;
-  state.accounts = state.accounts.filter(a=>a!==name);
-  save(); renderConfig();
+  save(); renderCatManageSheet();
 }
 
 /* ============================================================
@@ -1359,7 +1462,7 @@ function openContaModal(editId=null){
     const b = state.bankBalances.find(x=>x.id===editId);
     document.getElementById('contaTitle').textContent = 'Editar banco';
     document.getElementById('contaNome').value = b.name;
-    document.getElementById('contaValor').value = formatCurrencyInput(b.value);
+    document.getElementById('contaValor').value = formatCurrencyInput(bancoSaldo(b.id));
     document.getElementById('contaDeleteBtn').style.display = 'block';
   } else {
     document.getElementById('contaTitle').textContent = 'Novo banco';
@@ -1376,21 +1479,38 @@ function saveConta(){
 
   if(contaState.editId){
     const b = state.bankBalances.find(x=>x.id===contaState.editId);
-    Object.assign(b, {name, value});
+    b.name = name;
+    /* ajusta a diferença entre o valor digitado e o saldo já calculado pelos lançamentos,
+       criando/atualizando um lançamento de ajuste que entra no saldo total do app */
+    const atual = bancoSaldo(b.id);
+    const delta = value - atual;
+    if(delta !== 0){
+      let seed = state.transactions.find(t=>t.bankId===b.id && t.type==='saldo_inicial');
+      if(seed) seed.amount += delta;
+      else state.transactions.push({id:uid(), type:'saldo_inicial', amount:delta, date:todayISO(), bankId:b.id, desc:'Ajuste de saldo'});
+    }
   } else {
-    state.bankBalances.push({id:uid(), name, value});
+    const newId = uid();
+    state.bankBalances.push({id:newId, name});
+    if(value !== 0){
+      state.transactions.push({id:uid(), type:'saldo_inicial', amount:value, date:todayISO(), bankId:newId, desc:'Saldo inicial'});
+    }
   }
   save();
   closeSheet('conta');
   showCheck();
   toast(contaState.editId ? 'Banco atualizado' : 'Banco adicionado');
+  refreshAll();
   renderContas();
 }
 function deleteConta(){
+  state.transactions = state.transactions.filter(t=>!(t.bankId===contaState.editId && t.type==='saldo_inicial'));
+  state.transactions.forEach(t=>{ if(t.bankId===contaState.editId) delete t.bankId; });
   state.bankBalances = state.bankBalances.filter(b=>b.id!==contaState.editId);
   save();
   closeSheet('conta');
   toast('Banco excluído');
+  refreshAll();
   renderContas();
 }
 function renderContas(){
@@ -1407,7 +1527,7 @@ function renderContas(){
         <div class="emoji">🏦</div>
       </div>
       <div class="nome">${b.name}</div>
-      <div class="val num">${fmt(b.value)}</div>
+      <div class="val num">${fmt(bancoSaldo(b.id))}</div>
     </div>`;
   }).join('') + `<div class="pote-add" onclick="openContaModal()"><span style="font-size:20px;">＋</span>Adicionar banco</div>`;
 }
@@ -1422,11 +1542,13 @@ let balSelDate = new Date();
 function balShift(dir){
   balSelDate = new Date(balSelDate.getFullYear(), balSelDate.getMonth()+dir, 1);
   renderBalanceCard();
+  syncCarouselToBalDate(true);
   saveUi();
 }
 function balReset(){
   balSelDate = new Date();
   renderBalanceCard();
+  syncCarouselToBalDate(true);
   saveUi();
 }
 function renderBalanceCard(){
@@ -1443,29 +1565,128 @@ function renderBalanceCard(){
   document.getElementById('totalReceitas').textContent = fmt(totalPorTipo('receita', m, y));
   document.getElementById('totalDespesas').textContent = fmt(totalPorTipo('despesa', m, y));
 }
-/* swipe (touch) para navegar entre meses no card de saldo */
-(function setupBalanceSwipe(){
-  const card = document.getElementById('balanceCard');
-  if(!card) return;
-  let startX=0, startY=0, tracking=false;
-  card.addEventListener('touchstart', (e)=>{
-    if(!e.touches || !e.touches.length) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    tracking = true;
-  }, {passive:true});
-  card.addEventListener('touchend', (e)=>{
-    if(!tracking) return;
-    tracking = false;
-    const touch = e.changedTouches && e.changedTouches[0];
-    if(!touch) return;
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)*1.5){
-      if(dx < 0) balShift(1); else balShift(-1);
+
+/* ---------- carrossel de meses (snap scroll, acima do saldo total) ---------- */
+const MONTH_CAROUSEL_BEFORE = 18, MONTH_CAROUSEL_AFTER = 6;
+let carouselSyncing = false, carouselScrollTimer = null;
+const MES_ABREV = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function buildMonthCarousel(){
+  const wrap = document.getElementById('monthCarousel');
+  if(!wrap) return;
+  const now = new Date();
+  let html = '';
+  for(let i=-MONTH_CAROUSEL_BEFORE; i<=MONTH_CAROUSEL_AFTER; i++){
+    const d = new Date(now.getFullYear(), now.getMonth()+i, 1);
+    html += `<div class="month-pill" data-y="${d.getFullYear()}" data-m="${d.getMonth()}" onclick="carouselSelect(this)">${MES_ABREV[d.getMonth()]}<span class="y">${d.getFullYear()}</span></div>`;
+  }
+  wrap.innerHTML = html;
+  wrap.addEventListener('scroll', onCarouselScroll, {passive:true});
+  syncCarouselToBalDate(false);
+}
+function onCarouselScroll(){
+  if(carouselSyncing) return;
+  clearTimeout(carouselScrollTimer);
+  carouselScrollTimer = setTimeout(()=>{
+    const wrap = document.getElementById('monthCarousel');
+    if(!wrap) return;
+    const center = wrap.scrollLeft + wrap.clientWidth/2;
+    let closest=null, closestDist=Infinity;
+    wrap.querySelectorAll('.month-pill').forEach(p=>{
+      const pc = p.offsetLeft + p.offsetWidth/2;
+      const dist = Math.abs(pc-center);
+      if(dist<closestDist){ closestDist=dist; closest=p; }
+    });
+    if(closest){
+      const y = parseInt(closest.dataset.y), m = parseInt(closest.dataset.m);
+      if(y!==balSelDate.getFullYear() || m!==balSelDate.getMonth()){
+        balSelDate = new Date(y,m,1);
+        renderBalanceCard();
+        saveUi();
+      }
+      highlightActivePill(closest);
     }
-  }, {passive:true});
-})();
+  }, 90);
+}
+function highlightActivePill(activeEl){
+  document.querySelectorAll('.month-pill').forEach(p=>p.classList.toggle('active', p===activeEl));
+}
+function carouselSelect(pill){
+  carouselSyncing = true;
+  pill.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  const y = parseInt(pill.dataset.y), m = parseInt(pill.dataset.m);
+  balSelDate = new Date(y,m,1);
+  renderBalanceCard();
+  highlightActivePill(pill);
+  saveUi();
+  setTimeout(()=>{ carouselSyncing=false; }, 450);
+}
+function syncCarouselToBalDate(smooth){
+  const wrap = document.getElementById('monthCarousel');
+  if(!wrap) return;
+  const pill = wrap.querySelector(`.month-pill[data-y="${balSelDate.getFullYear()}"][data-m="${balSelDate.getMonth()}"]`);
+  if(pill){
+    carouselSyncing = true;
+    pill.scrollIntoView({behavior: smooth?'smooth':'auto', inline:'center', block:'nearest'});
+    highlightActivePill(pill);
+    setTimeout(()=>{ carouselSyncing=false; }, smooth?450:60);
+  }
+}
+
+/* ---------- toque e segure (1s) em Receitas/Despesas: ver e somar itens do mês ---------- */
+function bindLongPress(el, onLongPress, ms=1000){
+  if(!el) return;
+  let timer=null, fired=false, startX=0, startY=0;
+  const start = (x,y)=>{ fired=false; startX=x; startY=y; timer=setTimeout(()=>{ fired=true; if(navigator.vibrate) navigator.vibrate(15); onLongPress(); }, ms); };
+  const clear = ()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+  el.addEventListener('touchstart', e=>{ const t=e.touches[0]; start(t.clientX,t.clientY); }, {passive:true});
+  el.addEventListener('touchmove', e=>{ const t=e.touches[0]; if(Math.abs(t.clientX-startX)>10 || Math.abs(t.clientY-startY)>10) clear(); }, {passive:true});
+  el.addEventListener('touchend', clear, {passive:true});
+  el.addEventListener('mousedown', e=>start(e.clientX,e.clientY));
+  el.addEventListener('mouseup', clear);
+  el.addEventListener('mouseleave', clear);
+  el.addEventListener('click', e=>{ if(fired){ e.preventDefault(); e.stopPropagation(); fired=false; } }, true);
+}
+bindLongPress(document.getElementById('miniStatReceita'), ()=>openStatSheet('receita'));
+bindLongPress(document.getElementById('miniStatDespesa'), ()=>openStatSheet('despesa'));
+let statSelection = new Set();
+function openStatSheet(type){
+  statSelection = new Set();
+  renderStatSheet(type);
+  openSheet('stat');
+}
+function renderStatSheet(type){
+  const y = balSelDate.getFullYear(), m = balSelDate.getMonth();
+  const list = state.transactions.filter(t=>{
+    if(t.type!==type) return false;
+    const d = new Date(t.date+'T00:00:00');
+    return d.getMonth()===m && d.getFullYear()===y;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('statTitle').textContent = (type==='receita'?'Receitas':'Despesas') + ' · ' + mesLabel(balSelDate);
+  document.getElementById('statCount').textContent = list.length + (list.length===1?' lançamento':' lançamentos');
+  const sumSel = list.filter(t=>statSelection.has(t.id)).reduce((a,t)=>a+t.amount,0);
+  document.getElementById('statSumBar').textContent = `Selecionado: ${fmt(sumSel)} (${statSelection.size} ${statSelection.size===1?'item':'itens'})`;
+  const el = document.getElementById('statList');
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state"><div>Nada por aqui neste mês.</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(t=>{
+    const cat = state.categories.find(c=>c.name===t.category) || {iconKey:'outros'};
+    const bank = state.bankBalances.find(b=>b.id===t.bankId);
+    const sub = t.category + (bank?(' · '+bank.name):'') + ' · ' + new Date(t.date+'T00:00:00').toLocaleDateString('pt-BR');
+    const isSel = statSelection.has(t.id);
+    return `<div class="list-item ${type}" style="${isSel?'background:rgba(255,255,255,0.05); border-radius:14px;':''}" onclick="toggleStatSelect('${t.id}','${type}')">
+      <div class="ico" style="${isSel?'box-shadow:0 0 0 2px var(--accent) inset;':''}">${isSel?'✓':(typeof iconFor(cat)==='string' && iconFor(cat).startsWith('<svg') ? iconFor(cat) : '')}</div>
+      <div class="info"><div class="t1">${t.desc||t.category}</div><div class="t2">${sub}</div></div>
+      <div class="amt num">${fmt(t.amount)}</div>
+    </div>`;
+  }).join('');
+}
+function toggleStatSelect(id, type){
+  if(statSelection.has(id)) statSelection.delete(id); else statSelection.add(id);
+  renderStatSheet(type);
+}
+
 function renderDashboard(){
   renderBalanceCard();
   renderPredict(saldoTotal());
@@ -1479,9 +1700,17 @@ function renderPredict(saldo){
   const gastoDiario = Math.max(0, saldo) / diasRestantes;
   document.getElementById('gastoDiario').textContent = fmt(gastoDiario);
   const pill = document.getElementById('predictPill');
-  if(saldo<0){ pill.textContent='atenção'; pill.className='predict-pill warn'; }
-  else if(gastoDiario < 15){ pill.textContent='apertado'; pill.className='predict-pill warn'; }
-  else { pill.textContent='no controle'; pill.className='predict-pill ok'; }
+  const explain = document.getElementById('predictExplain');
+  if(saldo<0){
+    pill.textContent='atenção'; pill.className='predict-pill warn';
+    explain.textContent = `Seu saldo está negativo. Priorize equilibrar as contas antes de novos gastos.`;
+  } else if(gastoDiario < 15){
+    pill.textContent='apertado'; pill.className='predict-pill warn';
+    explain.textContent = `Faltam ${diasRestantes} dias no mês e a margem está curta — evite gastos que não sejam essenciais.`;
+  } else {
+    pill.textContent='no controle'; pill.className='predict-pill ok';
+    explain.textContent = `Faltam ${diasRestantes} dias no mês. Gastando até esse valor por dia, seu saldo não fica negativo.`;
+  }
 
   // projeção: média mensal dos últimos 3 meses com dados + projeção 3 meses futuros
   const hist = [];
@@ -1556,6 +1785,7 @@ function gotoCalendarFromPop(){
 }
 function txRowHTML(t){
   const isPote = t.type==='deposito' || t.type==='retirada';
+  const isSaldoInicial = t.type==='saldo_inicial';
   let cls, icon, title, sub, sign;
   if(isPote){
     const p = state.potes.find(x=>x.id===t.poteId);
@@ -1563,20 +1793,27 @@ function txRowHTML(t){
     title = (t.type==='deposito'?'Guardado em ':'Retirado de ')+(p?p.name:'caixinha');
     sub = new Date(t.date+'T00:00:00').toLocaleDateString('pt-BR');
     sign = t.type==='deposito' ? '−' : '+';
+  } else if(isSaldoInicial){
+    const b = state.bankBalances.find(x=>x.id===t.bankId);
+    cls='receita'; icon = '🏦';
+    title = t.desc || 'Ajuste de saldo';
+    sub = (b?b.name:'banco') + ' · ' + new Date(t.date+'T00:00:00').toLocaleDateString('pt-BR');
+    sign = t.amount>=0 ? '+' : '−';
   } else {
     const cat = state.categories.find(c=>c.name===t.category) || {iconKey:'outros'};
     cls = t.type; icon = iconFor(cat);
     title = t.desc || t.category;
-    sub = t.category + ' · ' + (t.account||'') + ' · ' + new Date(t.date+'T00:00:00').toLocaleDateString('pt-BR');
+    const bank = state.bankBalances.find(b=>b.id===t.bankId);
+    sub = t.category + (bank?(' · '+bank.name):'') + ' · ' + new Date(t.date+'T00:00:00').toLocaleDateString('pt-BR');
     sign = t.type==='receita' ? '+' : '−';
   }
   const clickHandler = isPote
     ? `onclick="openMoveModal('${t.poteId}','${t.id}')"`
-    : `onclick="openTxModal('${t.type}','${t.id}')"`;
+    : (isSaldoInicial ? `onclick="openContaModal('${t.bankId}')"` : `onclick="openTxModal('${t.type}','${t.id}')"`);
   return `<div class="list-item ${cls}" ${clickHandler}>
     <div class="ico">${typeof icon==='string' && icon.startsWith('<svg') ? icon : `<span style="font-size:19px;">${icon}</span>`}</div>
     <div class="info"><div class="t1">${title}</div><div class="t2">${sub}</div></div>
-    <div class="amt num">${sign} ${fmt(t.amount)}</div>
+    <div class="amt num">${sign} ${fmt(Math.abs(t.amount))}</div>
   </div>`;
 }
 function renderRecentList(){
@@ -1781,7 +2018,16 @@ function setTheme(theme){
   save();
 }
 function renderConfig(){
-  document.getElementById('catManageList').innerHTML = state.categories.map(c=>
+  document.getElementById('cfgCount').textContent = state.transactions.length;
+}
+function openCatManage(){
+  renderCatManageSheet();
+  openSheet('catManage');
+}
+function renderCatManageSheet(){
+  const el = document.getElementById('catManageListSheet');
+  if(!el) return;
+  el.innerHTML = state.categories.map(c=>
     `<div class="cat-manage-item"><span>${c.name}</span>
       <span style="display:flex; gap:6px;">
       <button class="icon-btn" onclick="renameCategory('${c.name.replace(/'/g,"\\'")}')">
@@ -1791,17 +2037,6 @@ function renderConfig(){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6h12z"/></svg>
       </button></span></div>`
   ).join('');
-  document.getElementById('accManageList').innerHTML = state.accounts.map(a=>
-    `<div class="cat-manage-item"><span>${a}</span>
-      <span style="display:flex; gap:6px;">
-      <button class="icon-btn" onclick="renameAccount('${a.replace(/'/g,"\\'")}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      </button>
-      <button class="icon-btn" onclick="removeAccount('${a.replace(/'/g,"\\'")}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6h12z"/></svg>
-      </button></span></div>`
-  ).join('');
-  document.getElementById('cfgCount').textContent = state.transactions.length;
 }
 function confirmReset(){
   if(!confirm('Isso apagará TODOS os dados do app. Deseja continuar?')) return;
@@ -1846,6 +2081,7 @@ function init(){
   }
   selectedDay = uiState.selectedDay || null;
 
+  buildMonthCarousel();
   renderDashboard();
   renderConfig();
   maskCurrencyInput(document.getElementById('txValor'));
