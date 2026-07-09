@@ -522,6 +522,12 @@ input,select{font-family:inherit;}
         </div>
       </div>
       <div style="text-align:center; margin-top:8px; font-size:10.5px; color:var(--text-faint);">toque e segure em receitas/despesas para ver e somar itens</div>
+      <div class="caixinhas-total-row" id="caixinhasTotalRow" onclick="goTo('caixinhas')" style="margin-top:14px; background:rgba(140,124,250,0.08); border:1px solid rgba(140,124,250,0.25); border-radius:14px; padding:12px 14px; display:none; align-items:center; justify-content:space-between; cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-dim); font-weight:600;">
+          <span style="font-size:16px;">🐷</span> Guardado em caixinhas
+        </div>
+        <div class="num" id="totalCaixinhasVal" style="font-weight:700; color:var(--accent-3); font-size:15px;">R$ 0,00</div>
+      </div>
     </div>
 
     <div class="section-title"><h3>Previsibilidade</h3></div>
@@ -793,6 +799,7 @@ input,select{font-family:inherit;}
     <button id="moveTypeIn" class="receita active" onclick="setMoveType('deposito')">Guardar</button>
     <button id="moveTypeOut" class="despesa" onclick="setMoveType('retirada')">Retirar</button>
   </div>
+  <div id="moveAvailable" style="text-align:center; font-size:12.5px; color:var(--text-dim); margin:-8px 0 14px;">Disponível: R$ 0,00</div>
   <div class="field"><label>Valor</label><input type="text" inputmode="decimal" id="moveValor" placeholder="0,00"></div>
   <button class="btn-primary roxo" onclick="saveMove()">Confirmar</button>
   <button class="btn-danger" id="moveDeleteBtn" style="display:none;" onclick="deleteMove()">Excluir movimentação</button>
@@ -1012,6 +1019,9 @@ function poteSaldo(poteId){
     if(t.type==='retirada') return acc-t.amount;
     return acc;
   },0);
+}
+function totalGuardadoCaixinhas(){
+  return state.potes.reduce((acc,p)=>acc+poteSaldo(p.id),0);
 }
 function bancoSaldo(bankId){
   return state.transactions.filter(t=>t.bankId===bankId).reduce((acc,t)=>{
@@ -1440,6 +1450,16 @@ function setMoveType(type){
   moveState.type = type;
   document.getElementById('moveTypeIn').classList.toggle('active', type==='deposito');
   document.getElementById('moveTypeOut').classList.toggle('active', type==='retirada');
+  const bal = moveState.poteId ? poteSaldo(moveState.poteId) : 0;
+  const label = document.getElementById('moveAvailable');
+  if(label){
+    if(type==='retirada'){
+      label.innerHTML = `Disponível para retirar: <strong>${fmt(bal)}</strong>`;
+    } else {
+      const total = saldoTotal();
+      label.innerHTML = `Guardado atualmente: <strong>${fmt(bal)}</strong><br>Saldo total disponível: <strong>${fmt(total)}</strong>`;
+    }
+  }
 }
 function saveMove(){
   const amount = parseCurrencyInput(document.getElementById('moveValor').value);
@@ -1587,6 +1607,16 @@ function renderBalanceCard(){
   saldoEl.classList.toggle('neg', val<0);
   document.getElementById('totalReceitas').textContent = fmt(totalPorTipo('receita', m, y));
   document.getElementById('totalDespesas').textContent = fmt(totalPorTipo('despesa', m, y));
+
+  const caixinhasRow = document.getElementById('caixinhasTotalRow');
+  if(caixinhasRow){
+    if(state.potes.length){
+      caixinhasRow.style.display = 'flex';
+      document.getElementById('totalCaixinhasVal').textContent = fmt(totalGuardadoCaixinhas());
+    } else {
+      caixinhasRow.style.display = 'none';
+    }
+  }
 }
 
 /* ---------- carrossel de meses (snap scroll, acima do saldo total) ---------- */
