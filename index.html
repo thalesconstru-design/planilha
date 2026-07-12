@@ -36,6 +36,22 @@
     overscroll-behavior:none;
     -webkit-user-select:none; user-select:none;
   }
+  /* fluid press feedback applied broadly */
+  button, .day-row, .tag-row, .kv-row, .sheet-option, .day-detail-item, .link-row, .mostrar-pill, .tag-color-opt{
+    transition: transform .12s cubic-bezier(.2,.8,.3,1), opacity .12s ease, background-color .15s ease;
+    cursor:pointer;
+  }
+  button:active, .mostrar-pill:active{ transform:scale(.96); opacity:.82; }
+  .day-row:active .col-mid, .day-row:active .col-saldo{ transform:scale(.985); }
+  .tag-row:active, .kv-row:active, .sheet-option:active, .day-detail-item:active, .link-row:active{
+    background:#f4f4f6; transform:scale(.99);
+  }
+  .tag-color-opt:active{ transform:scale(.85); }
+  @keyframes fadeSlideUp{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .anim-in{ animation:fadeSlideUp .32s cubic-bezier(.2,.8,.2,1) both; }
   #app{
     max-width:520px; margin:0 auto; height:100vh; height:100dvh;
     display:flex; flex-direction:column; position:relative;
@@ -75,10 +91,11 @@
   .grid-icon span:nth-child(9){ background:var(--khaki-strong); opacity:.6;}
 
   /* ---------- Main ---------- */
-  #mainContent{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain; }
-  #daysList{ touch-action:pan-y; padding-bottom:8px; }
-  .view{ display:none; }
+  #mainContent{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain; position:relative; }
+  #daysList{ touch-action:pan-y; padding-bottom:8px; transition:transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease; }
+  .view{ display:none; opacity:0; transform:translateY(8px); transition:opacity .24s ease, transform .24s cubic-bezier(.2,.8,.2,1); }
   .view.active{ display:block; }
+  .view.active.show{ opacity:1; transform:translateY(0); }
 
   /* section headers */
   .section-title{
@@ -104,6 +121,7 @@
   .day-row .col-dia{
     display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:600; padding:16px 0;
     position:relative; overflow:hidden; touch-action:manipulation;
+    transition:background-color .15s ease, transform .12s ease;
   }
   .day-row.is-today .col-dia{ color:var(--accent); }
   .day-row .col-dia .day-check-badge{
@@ -114,10 +132,12 @@
     pointer-events:none;
   }
   .day-row .col-dia.checked .day-check-badge{ opacity:1; transform:rotate(45deg) scale(1); }
-  .day-row .col-dia:active{ background:#f5f5f6; }
+  .day-row .col-dia:active{ background:#f5f5f6; transform:scale(.94); }
   .day-row .col-mid{
     flex:1; display:flex; align-items:center; gap:8px; padding:16px 6px; min-width:0; touch-action:manipulation;
+    transition:background-color .15s ease;
   }
+  .day-row .col-mid:active{ background:#f5f5f6; }
   .day-row .col-mid .type-icon{ flex-shrink:0; }
   .day-row .col-mid .mid-value{ font-size:18px; color:var(--text); font-variant-numeric:tabular-nums; }
   .day-row .col-mid .mid-value.zero{ color:#c8c9cd; }
@@ -217,8 +237,9 @@
     padding-bottom:calc(env(safe-area-inset-bottom) + 18px);
   }
   .sheet.show{ transform:translateY(0); }
-  .sheet-handle{ width:36px; height:5px; background:#e2e3e7; border-radius:99px; margin:10px auto 0;}
-  .sheet-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px 8px;}
+  .sheet.dragging{ transition:none; }
+  .sheet-handle{ width:36px; height:5px; background:#e2e3e7; border-radius:99px; margin:10px auto 0; touch-action:none; }
+  .sheet-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px 8px; touch-action:none; }
   .sheet-header h2{ font-size:26px; margin:0; font-weight:800; letter-spacing:-.02em;}
   .sheet-header .close-x{ width:32px; height:32px; border-radius:50%; background:#f2f2f4; border:none; font-size:16px; color:#444;}
   .sheet-option{ display:flex; align-items:center; gap:14px; padding:14px 20px; border-top:1px solid var(--line);}
@@ -399,6 +420,7 @@
   </main>
 
   <nav id="bottomNav">
+    <div class="navtab-indicator" id="navIndicator"></div>
     <button data-view="saldos" class="active"><span class="nav-ico">▦</span>saldos</button>
     <button data-view="totais"><span class="nav-ico">≑</span>totais</button>
     <button id="fabAdd">+</button>
@@ -520,7 +542,8 @@ function renderSaldos(){
   for(let d=1; d<=nDays; d++){
     const dayTx = txForDay(viewYear, viewMonth, d);
     const row = document.createElement("div");
-    row.className = "day-row" + (isCurMonth && d===today.getDate() ? " is-today":"");
+    row.className = "day-row anim-in" + (isCurMonth && d===today.getDate() ? " is-today":"");
+    row.style.animationDelay = Math.min(d*14, 260)+"ms";
 
     const dateStr = viewYear+"-"+pad(viewMonth+1)+"-"+pad(d);
     const colDia = document.createElement("div");
@@ -646,11 +669,14 @@ function renderTags(filterText){
   const wrap = document.getElementById("tagsList");
   wrap.innerHTML = "";
   const f = (filterText||"").trim().toLowerCase();
+  let idx = 0;
   state.tags
     .filter(tag=> tag.name.toLowerCase().includes(f))
     .forEach(tag=>{
       const row = document.createElement("div");
-      row.className = "tag-row";
+      row.className = "tag-row anim-in";
+      row.style.animationDelay = Math.min(idx*14, 260)+"ms";
+      idx++;
       row.innerHTML =
         '<span class="tag-swatch" style="background:'+tag.color+'; color:'+tag.color+'"></span>'+
         '<span class="tag-name">'+escapeHtml(tag.name)+'</span>'+
@@ -728,21 +754,55 @@ function renderAll(){
 /* ---------------- navigation ---------------- */
 document.getElementById("prevMonth").addEventListener("click", ()=>{
   viewMonth--; if(viewMonth<0){ viewMonth=11; viewYear--; }
-  renderAll();
+  animateMonthChange(1);
 });
 document.getElementById("nextMonth").addEventListener("click", ()=>{
   viewMonth++; if(viewMonth>11){ viewMonth=0; viewYear++; }
-  renderAll();
+  animateMonthChange(-1);
 });
+function animateMonthChange(dir){
+  const list = document.getElementById("daysList");
+  list.style.transition = "none";
+  list.style.transform = "translateX("+(dir*26)+"px)";
+  list.style.opacity = "0";
+  renderAll();
+  requestAnimationFrame(()=>{
+    list.style.transition = "transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease";
+    list.style.transform = "translateX(0)";
+    list.style.opacity = "1";
+  });
+}
 
 const tabButtons = document.querySelectorAll("#bottomNav button[data-view]");
+const navIndicator = document.getElementById("navIndicator");
+function moveIndicator(btn){
+  if(!btn) return;
+  const navRect = document.getElementById("bottomNav").getBoundingClientRect();
+  const r = btn.getBoundingClientRect();
+  navIndicator.style.width = r.width+"px";
+  navIndicator.style.left = (r.left - navRect.left)+"px";
+}
 function switchTab(name){
+  if(currentTab === name) return;
   currentTab = name;
-  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-  document.getElementById("view-"+name).classList.add("active");
+  const incoming = document.getElementById("view-"+name);
+  const outgoing = document.querySelector(".view.active");
   tabButtons.forEach(b=> b.classList.toggle("active", b.dataset.view===name));
+  moveIndicator(document.querySelector('#bottomNav button[data-view="'+name+'"]'));
+
+  if(outgoing && outgoing !== incoming){
+    outgoing.classList.remove("show");
+    setTimeout(()=> outgoing.classList.remove("active"), 220);
+  }
+  incoming.classList.add("active");
+  incoming.style.transform = "translateY(8px)";
+  incoming.style.opacity = "0";
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=> incoming.classList.add("show"));
+  });
 }
 tabButtons.forEach(b=> b.addEventListener("click", ()=> switchTab(b.dataset.view)));
+window.addEventListener("resize", ()=> moveIndicator(document.querySelector('#bottomNav button[data-view="'+currentTab+'"]')));
 
 document.getElementById("menuBtn").addEventListener("click", ()=>{
   showToast("menu em breve");
@@ -795,12 +855,55 @@ function openSheet(innerHTML, opts){
   requestAnimationFrame(()=>{ backdrop.classList.add("show"); sheet.classList.add("show"); });
 
   function close(){
+    sheet.classList.remove("dragging");
+    sheet.style.transform = "";
     backdrop.classList.remove("show"); sheet.classList.remove("show");
+    setTimeout(()=>{ backdrop.remove(); if(overlayRoot.children.length===0 && !horizonteOpen) overlayRoot.style.pointerEvents="none"; }, 260);
+    if(opts.onClose) opts.onClose();
+  }
+  function closeFromDrag(){
+    sheet.classList.remove("dragging");
+    requestAnimationFrame(()=>{ sheet.style.transform = "translateY(100%)"; backdrop.classList.remove("show"); });
     setTimeout(()=>{ backdrop.remove(); if(overlayRoot.children.length===0 && !horizonteOpen) overlayRoot.style.pointerEvents="none"; }, 260);
     if(opts.onClose) opts.onClose();
   }
   backdrop.addEventListener("click", (e)=>{ if(e.target===backdrop) close(); });
   sheet.querySelectorAll("[data-close]").forEach(el=> el.addEventListener("click", close));
+
+  /* grab-and-drag to dismiss, from the handle or the header at any time */
+  let dragStartY = 0, dragging = false, sheetHeight = 0;
+  function onDragStart(e){
+    dragging = true;
+    dragStartY = e.clientY;
+    sheetHeight = sheet.getBoundingClientRect().height;
+    sheet.classList.add("dragging");
+  }
+  function onDragMove(e){
+    if(!dragging) return;
+    const dy = Math.max(0, e.clientY - dragStartY);
+    sheet.style.transform = "translateY("+dy+"px)";
+  }
+  function onDragEnd(e){
+    if(!dragging) return;
+    dragging = false;
+    sheet.classList.remove("dragging");
+    const dy = Math.max(0, (e.clientY||dragStartY) - dragStartY);
+    if(dy > sheetHeight*0.28 || dy > 140){
+      closeFromDrag();
+    } else {
+      sheet.style.transform = "translateY(0)";
+    }
+  }
+  [sheet.querySelector(".sheet-handle"), sheet.querySelector(".sheet-header")].forEach(grabZone=>{
+    if(!grabZone) return;
+    grabZone.style.cursor = "grab";
+    grabZone.addEventListener("pointerdown", onDragStart);
+  });
+  sheet.addEventListener("pointermove", onDragMove);
+  sheet.addEventListener("pointerup", onDragEnd);
+  sheet.addEventListener("pointercancel", onDragEnd);
+  sheet.addEventListener("pointerleave", (e)=>{ if(dragging && e.target===sheet) onDragEnd(e); });
+
   return {sheet, close};
 }
 function showToast(msg){
@@ -1084,6 +1187,8 @@ overlayRoot.appendChild(horizonteScreen);
 
 /* ---------------- init ---------------- */
 renderAll();
+document.getElementById("view-saldos").classList.add("show");
+requestAnimationFrame(()=> moveIndicator(document.querySelector('#bottomNav button[data-view="saldos"]')));
 })();
 </script>
 </body>
