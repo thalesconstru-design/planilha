@@ -37,235 +37,237 @@ Error generating stack: `+a.message+`
   <body>
     <div id="root"></div>
     <noscript>Ative o JavaScript no navegador para usar a Planilha do Thales.</noscript>
-                                                                                   <script>
-(() => {
-  const KEY = "planilhaThalesData_v2";
-  const colors = ["#e6dfa0", "#d9b48f", "#9ec8ef", "#d8d8dc", "#b7e4c7", "#f6c99b", "#c9b6f0", "#f4a261", "#e76f51", "#e9c46a"];
-  let newTags = [];
-  let reloadAfterSave = false;
+    <script>
+(function () {
+  "use strict";
 
-  const originalSetItem = Storage.prototype.setItem;
-  const originalRemoveItem = Storage.prototype.removeItem;
+  var DATA_KEY = "planilhaThalesData_v2";
+  var CREATE_VALUE = "__create_new_tag__";
+  var colors = [
+    "#e6dfa0", "#d9b48f", "#9ec8ef", "#d8d8dc", "#b7e4c7",
+    "#f6c99b", "#c9b6f0", "#f4a261", "#e76f51", "#e9c46a",
+    "#2a9d8f", "#8ecae6", "#219ebc", "#ffafcc", "#bde0fe"
+  ];
+  var pendingTags = [];
+  var reloadAfterSave = false;
+  var originalSetItem = Storage.prototype.setItem;
+  var originalRemoveItem = Storage.prototype.removeItem;
 
-  Storage.prototype.setItem = function (key, value) {
-    if (key === KEY && newTags.length) {
-      try {
-        const data = JSON.parse(value);
-        data.tags = Array.isArray(data.tags) ? data.tags : [];
-        newTags.forEach(tag => {
-          if (!data.tags.some(item => item.id === tag.id)) data.tags.push(tag);
-        });
-        value = JSON.stringify(data);
-      } catch (_) {}
-    }
-    const result = originalSetItem.call(this, key, value);
-if (key === KEY && reloadAfterSave && newTags.length) {
-  reloadAfterSave = false;
-  setTimeout(() => window.location.reload(), 150);
-}
-return result;
-  };
-
-  Storage.prototype.removeItem = function (key) {
-    if (key === KEY) newTags = [];
-    return originalRemoveItem.call(this, key);
-  };
-
-  function readData() {
+  function readState() {
     try {
-      return JSON.parse(localStorage.getItem(KEY) || "{}");
+      return JSON.parse(localStorage.getItem(DATA_KEY) || "{}");
     } catch (_) {
       return {};
     }
   }
 
-  function dataFor(select) {
-    const data = readData();
-    data.tags = Array.isArray(data.tags) ? data.tags : [];
+  function saveWithPendingTags(key, value) {
+    if (key !== DATA_KEY || !pendingTags.length) return value;
 
-    [...select.options].filter(option => option.value).forEach(option => {
-      if (!data.tags.some(tag => tag.id === option.value)) {
-        data.tags.push({
+    try {
+      var state = JSON.parse(value);
+      state.tags = Array.isArray(state.tags) ? state.tags : [];
+
+      pendingTags.forEach(function (tag) {
+        if (!state.tags.some(function (item) {
+          return item.id === tag.id;
+        })) {
+          state.tags.push(tag);
+        }
+      });
+
+      return JSON.stringify(state);
+    } catch (_) {
+      return value;
+    }
+  }
+
+  Storage.prototype.setItem = function (key, value) {
+    var result = originalSetItem.call(
+      this,
+      key,
+      saveWithPendingTags(key, value)
+    );
+
+    if (key === DATA_KEY && reloadAfterSave && pendingTags.length) {
+      reloadAfterSave = false;
+      window.setTimeout(function () {
+        window.location.reload();
+      }, 200);
+    }
+
+    return result;
+  };
+
+  Storage.prototype.removeItem = function (key) {
+    if (key === DATA_KEY) {
+      pendingTags = [];
+      reloadAfterSave = false;
+    }
+    return originalRemoveItem.call(this, key);
+  };
+
+  function newTagId() {
+    return Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 8);
+  }
+
+  function stateIncludingSelectOptions(select) {
+    var state = readState();
+    state.tags = Array.isArray(state.tags) ? state.tags : [];
+
+    Array.prototype.forEach.call(select.options, function (option) {
+      if (!option.value || option.value === CREATE_VALUE) return;
+
+      if (!state.tags.some(function (tag) {
+        return tag.id === option.value;
+      })) {
+        state.tags.push({
           id: option.value,
           name: option.textContent.trim(),
-          color: colors[data.tags.length % colors.length]
+          color: colors[state.tags.length % colors.length]
         });
       }
     });
 
-    return data;
+    return state;
   }
 
-  function enhance(select) {
-    if (select.dataset.tagUpgrade) return;
-    select.dataset.tagUpgrade = "true";
-    select.style.display = "none";
+  function selectValue(select, value) {
+    var descriptor = Object.getOwnPropertyDescriptor(
+      HTMLSelectElement.prototype,
+      "value"
+    );
 
-    const wrapper = select.parentElement;
-    [...wrapper.children].forEach(child => {
-      if (child !== select) child.remove();
+    descriptor.set.call(select, value);
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function ensureOptions(select) {
+    var state = stateIncludingSelectOptions(select);
+
+    state.tags.forEach(function (tag) {
+      if (!tag || !tag.id || !tag.name) return;
+
+      var option = Array.prototype.find.call(select.options, function (item) {
+        return item.value === tag.id;
+      });
+
+      if (!option) {
+        select.add(new Option(tag.name, tag.id));
+      } else {
+        option.textContent = tag.name;
+      }
     });
 
-    const root = document.createElement("div");
-    root.className = "relative";
+    var createOptionExists = Array.prototype.some.call(
+      select.options,
+      function (option) {
+        return option.value === CREATE_VALUE;
+      }
+    );
 
-    const trigger = document.createElement("button");
-    trigger.type = "button";
-    trigger.className = "w-full bg-muted/50 rounded-xl p-4 pr-10 font-medium text-lg text-left relative";
-    trigger.setAttribute("aria-expanded", "false");
-
-    const label = document.createElement("span");
-    label.className = "truncate block";
-    const arrow = document.createElement("span");
-    arrow.className = "absolute right-4 top-1/2 -translate-y-1/2 opacity-50";
-    arrow.textContent = "▾";
-    trigger.append(label, arrow);
-
-    const menu = document.createElement("div");
-    menu.className = "absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl border border-border bg-card p-2 shadow-xl";
-    menu.hidden = true;
-
-    function syncTags() {
-      const data = dataFor(select);
-      data.tags.forEach(tag => {
-        if (!tag.id || !tag.name) return;
-        let option = [...select.options].find(item => item.value === tag.id);
-        if (!option) select.add(new Option(tag.name, tag.id));
-        else option.textContent = tag.name;
-      });
-      return data;
+    if (!createOptionExists) {
+      select.add(new Option("+ Nova tag", CREATE_VALUE));
     }
 
-    function choose(value) {
-      select.value = value;
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-      const selected = select.options[select.selectedIndex];
-      label.textContent = selected ? selected.textContent : "Sem tag";
-      menu.hidden = true;
-      trigger.setAttribute("aria-expanded", "false");
-    }
+    return state;
+  }
 
-    function render() {
-      syncTags();
-      const selected = select.options[select.selectedIndex];
-      label.textContent = selected ? selected.textContent : "Sem tag";
-      menu.replaceChildren();
+  function isTagSelect(select) {
+    return Array.prototype.some.call(select.options, function (option) {
+      return option.textContent.trim().toLowerCase() === "sem tag";
+    });
+  }
 
-      function addOption(text, value) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "w-full rounded-xl px-3 py-3 text-left font-medium hover:bg-muted";
-        button.textContent = text;
-        button.onclick = () => choose(value);
-        menu.appendChild(button);
+  function install(select) {
+    ensureOptions(select);
+
+    if (select.dataset.tagCreateHandler === "true") return;
+
+    select.dataset.tagCreateHandler = "true";
+    select.dataset.previousTagValue = select.value || "";
+
+    select.addEventListener("change", function (event) {
+      if (select.value !== CREATE_VALUE) {
+        select.dataset.previousTagValue = select.value || "";
+        return;
       }
 
-      addOption("Sem tag", "");
-      [...select.options].filter(option => option.value).forEach(option => {
-        addOption(option.textContent, option.value);
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      var previousValue = select.dataset.previousTagValue || "";
+      var name = window.prompt("Digite o nome da nova tag:");
+
+      if (name === null || !name.trim()) {
+        selectValue(select, previousValue);
+        return;
+      }
+
+      name = name.trim();
+
+      var state = stateIncludingSelectOptions(select);
+      var existing = state.tags.find(function (tag) {
+        return String(tag.name || "").trim().toLowerCase() ===
+          name.toLowerCase();
       });
 
-      const createButton = document.createElement("button");
-      createButton.type = "button";
-      createButton.className = "w-full rounded-xl px-3 py-3 mt-2 border-t border-border text-left font-bold text-primary";
-      createButton.textContent = "+ Nova tag";
-      createButton.onclick = () => {
-        const form = document.createElement("div");
-        form.className = "flex gap-2 mt-2";
+      if (existing) {
+        ensureOptions(select);
+        selectValue(select, existing.id);
+        return;
+      }
 
-        const input = document.createElement("input");
-        input.className = "min-w-0 flex-1 rounded-xl bg-muted/50 px-3 py-3";
-        input.placeholder = "Nome da nova tag";
-
-        const saveButton = document.createElement("button");
-        saveButton.type = "button";
-        saveButton.className = "rounded-xl bg-foreground px-3 py-3 font-bold text-background";
-        saveButton.textContent = "Criar";
-
-        function createTag() {
-          const name = input.value.trim();
-          if (!name) return input.focus();
-
-          const data = syncTags();
-          const existing = data.tags.find(tag =>
-            tag.name.trim().toLowerCase() === name.toLowerCase()
-          );
-
-          if (existing) return choose(existing.id);
-
-          const tag = {
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
-            name,
-            color: colors[data.tags.length % colors.length]
-          };
-
-          newTags.push(tag);
-          data.tags.push(tag);
-          localStorage.setItem(KEY, JSON.stringify(data));
-          select.add(new Option(tag.name, tag.id));
-          choose(tag.id);
-        }
-
-        saveButton.onclick = createTag;
-        input.onkeydown = event => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            createTag();
-          }
-        };
-
-        form.append(input, saveButton);
-        createButton.replaceWith(form);
-        input.focus();
+      var tag = {
+        id: newTagId(),
+        name: name,
+        color: colors[state.tags.length % colors.length]
       };
 
-      menu.appendChild(createButton);
-    }
+      pendingTags.push(tag);
+      state.tags.push(tag);
+      localStorage.setItem(DATA_KEY, JSON.stringify(state));
 
-    trigger.onclick = event => {
-      event.stopPropagation();
-      render();
-      menu.hidden = !menu.hidden;
-      trigger.setAttribute("aria-expanded", String(!menu.hidden));
-    };
-
-    select.addEventListener("change", render);
-    root.append(trigger, menu);
-    wrapper.appendChild(root);
-    render();
-
-    document.addEventListener("click", event => {
-      if (!root.contains(event.target)) {
-        menu.hidden = true;
-        trigger.setAttribute("aria-expanded", "false");
-      }
-    });
+      ensureOptions(select);
+      selectValue(select, tag.id);
+    }, true);
   }
 
   function scan() {
-    document.querySelectorAll("select").forEach(select => {
-      if ([...select.options].some(option =>
-        option.textContent.trim().toLowerCase() === "sem tag"
-      )) {
-        enhance(select);
-      }
+    document.querySelectorAll("select").forEach(function (select) {
+      if (isTagSelect(select)) install(select);
     });
   }
 
-  document.addEventListener("click", event => {
-  const button = event.target.closest("button");
-  if (button && button.textContent.trim().toLowerCase() === "salvar" && newTags.length) {
-    reloadAfterSave = true;
-    setTimeout(() => {
-      reloadAfterSave = false;
-    }, 1000);
-  }
-}, true); new MutationObserver(scan).observe(document.documentElement, {
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest &&
+      event.target.closest("button");
+
+    if (
+      button &&
+      button.textContent.trim().toLowerCase() === "salvar" &&
+      pendingTags.length
+    ) {
+      reloadAfterSave = true;
+      window.setTimeout(function () {
+        reloadAfterSave = false;
+      }, 1500);
+    }
+  }, true);
+
+  new MutationObserver(scan).observe(document.documentElement, {
     childList: true,
     subtree: true
   });
-  scan();
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", scan);
+  } else {
+    scan();
+  }
 })();
-</script>
+</script>                                                                               
   </body>
 </html>
