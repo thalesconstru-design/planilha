@@ -42,6 +42,7 @@ Error generating stack: `+a.message+`
   const KEY = "planilhaThalesData_v2";
   const colors = ["#e6dfa0", "#d9b48f", "#9ec8ef", "#d8d8dc", "#b7e4c7", "#f6c99b", "#c9b6f0", "#f4a261", "#e76f51", "#e9c46a"];
   let newTags = [];
+  let reloadAfterSave = false;
 
   const originalSetItem = Storage.prototype.setItem;
   const originalRemoveItem = Storage.prototype.removeItem;
@@ -57,7 +58,12 @@ Error generating stack: `+a.message+`
         value = JSON.stringify(data);
       } catch (_) {}
     }
-    return originalSetItem.call(this, key, value);
+    const result = originalSetItem.call(this, key, value);
+if (key === KEY && reloadAfterSave && newTags.length) {
+  reloadAfterSave = false;
+  setTimeout(() => window.location.reload(), 150);
+}
+return result;
   };
 
   Storage.prototype.removeItem = function (key) {
@@ -246,7 +252,15 @@ Error generating stack: `+a.message+`
     });
   }
 
-  new MutationObserver(scan).observe(document.documentElement, {
+  document.addEventListener("click", event => {
+  const button = event.target.closest("button");
+  if (button && button.textContent.trim().toLowerCase() === "salvar" && newTags.length) {
+    reloadAfterSave = true;
+    setTimeout(() => {
+      reloadAfterSave = false;
+    }, 1000);
+  }
+}, true); new MutationObserver(scan).observe(document.documentElement, {
     childList: true,
     subtree: true
   });
